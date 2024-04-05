@@ -2,13 +2,21 @@
   "name": "midas",
   "version": "1.0.0",
   "description": "my dynamo library",
-  "main": "index.js",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "watch": "parcel watch",
+    "build": "parcel build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel": "^2.12.0"
+    "@parcel/packager-ts": "^2.12.0",
+    "@parcel/transformer-typescript-types": "^2.12.0",
+    "parcel": "^2.12.0",
+    "typescript": "^5.4.4"
   }
 }
