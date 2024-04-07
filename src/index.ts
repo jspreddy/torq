@@ -1,3 +1,3 @@
-// export { Table } from './table';
+export { Table } from './table';
 
 export const x = {};
