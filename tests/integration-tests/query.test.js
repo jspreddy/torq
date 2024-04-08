@@ -1,4 +1,6 @@
 import { Query } from 'jspreddy-test';
+// import { Query } from '../../dist/main';
+// import { Query } from '../../dist/module';
 
 describe('class: Query', () => {
     it('should initialize with values', async () => {
