@@ -67,15 +67,17 @@ export class Query {
         return filterConditions;
     }
 
-    using(index: string) {
+    using(index: string): Query {
         this._index = index;
+        return this;
     }
 
-    limit(l: number) {
+    limit(l: number): Query {
         this._limit = l ?? Query.DEFAULT_LIMIT;
+        return this;
     }
 
-    toDynamo() {
+    toDynamo(): Object {
         throw new Error("TODO: to be implemented");
     }
 
