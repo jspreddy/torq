@@ -1,3 +1,3 @@
-export { Table } from './table';
+export { Query } from './query';
 
 export const x = {};

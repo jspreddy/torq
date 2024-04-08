@@ -8,6 +8,7 @@
   "types": "dist/types.d.ts",
   "scripts": {
     "test": "jest /tests/unit-tests/",
+    "test:watch": "jest --watch /tests/unit-tests/",
     "test:all": "npm run build; jest",
     "watch": "parcel watch",
     "build": "parcel build"

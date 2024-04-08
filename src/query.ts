@@ -1,6 +1,7 @@
-export class Table {
+export class Query {
+    static DEFAULT_LIMIT: number = 25;
 
-    private _name: string;
+    private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
     private _selections: Array<string>;
@@ -8,11 +9,11 @@ export class Table {
     private _rangeVal: string;
     private _filters: Array<object>;
     private _index: string;
-    private _limit: number;
+    private _limit: number = Query.DEFAULT_LIMIT;
 
     get state() {
         return {
-            name: this._name,
+            tableName: this._tableName,
             hashKey: this._hashKey,
             rangeKey: this._rangeKey,
             selections: this._selections,
@@ -24,12 +25,12 @@ export class Table {
         };
     }
 
-    constructor(name: string, hashKey: string, rangeKey: string) {
-        this._name = name;
+    constructor(tableName: string, hashKey: string, rangeKey: string) {
+        this._tableName = tableName;
         this._hashKey = hashKey;
         this._rangeKey = rangeKey;
 
-        // initialize here so that each Table obj has its own filter list.
+        // initialize here so that each query obj has its own filter list.
         this._filters = [];
     }
 
@@ -41,13 +42,13 @@ export class Table {
     get where() {
         const whereSelectors = {
             hash: {
-                eq: (val: string): Table => {
+                eq: (val: string): Query => {
                     this._hashVal = val;
                     return this;
                 }
             },
             range: {
-                eq: (val: string): Table => {
+                eq: (val: string): Query => {
                     this._rangeVal = val;
                     return this;
                 }
@@ -58,7 +59,7 @@ export class Table {
 
     get filter() {
         const filterConditions = {
-            eq: (attrib: string, val: any): Table => {
+            eq: (attrib: string, val: any): Query => {
                 this._filters.push({ attrib, val, type: 'eq' });
                 return this;
             }
@@ -71,11 +72,11 @@ export class Table {
     }
 
     limit(l: number) {
-        this._limit = l | 100;
+        this._limit = l ?? Query.DEFAULT_LIMIT;
     }
 
-    toDynamoQuery() {
-        return this.state;
+    toDynamo() {
+        throw new Error("TODO: to be implemented");
     }
 
 }
