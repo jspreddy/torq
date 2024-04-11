@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export class Query {
     static DEFAULT_LIMIT: number = 25;
 
@@ -78,7 +80,43 @@ export class Query {
     }
 
     toDynamo(): Object {
-        throw new Error("TODO: to be implemented");
+
+        return {
+            TableName: this._tableName,
+            Limit: this._limit,
+            ...formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal),
+            ...formatProjectionExpression(this._selections),
+        };
+    }
+}
+
+const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, rangeVal: any) => {
+    const conditionParts: string[] = [];
+    const attribVals = {};
+
+    if (hashKey && hashVal) {
+        conditionParts.push(`${hashKey} = :${hashKey}`);
+        _.set(attribVals, `:${hashKey}`, hashVal);
     }
 
-}
+    if (rangeKey && rangeVal) {
+        conditionParts.push(`${rangeKey} = :${rangeKey}`);
+        _.set(attribVals, `:${rangeKey}`, rangeVal);
+    }
+
+    return {
+        KeyConditionExpression: _.join(conditionParts, " and "),
+        ExpressionAttributeValues: attribVals,
+    }
+};
+
+
+const formatProjectionExpression = (proj) => {
+    if (_.isEmpty(proj)) {
+        return {};
+    }
+
+    return {
+        ProjectionExpression: _.join(proj, ", ")
+    };
+};
