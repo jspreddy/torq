@@ -82,8 +82,8 @@ describe('class: Query', () => {
         });
     });
 
-    describe.skip('Filters', () => {
-        it('should return proper dynamo api request payload', async () => {
+    describe('Filters', () => {
+        it('should return key condition, filter expression and their combined attributes', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select(['asdf', 'pqrs'])
@@ -98,12 +98,12 @@ describe('class: Query', () => {
                 Limit: 10,
                 ProjectionExpression: "asdf, pqrs",
                 KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterConditionExpression: "flower = :flower and isPolinated = :ispolinated",
+                FilterExpression: "flower = :flower and isPolinated = :isPolinated",
                 ExpressionAttributeValues: {
                     ":pk": 'aasdf',
                     ':sk': '1235:238h9084',
                     ':flower': 'rose',
-                    ':ispolinated': true,
+                    ':isPolinated': true,
                 },
             });
         });

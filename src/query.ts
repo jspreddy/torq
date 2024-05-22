@@ -80,15 +80,22 @@ export class Query {
     }
 
     toDynamo(): Object {
-
+        const [keyCond, keyAttribVals] = formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal);
+        const [filterCond, filterAttribVals] = formatFilterCondition(this._filters);
         return {
             TableName: this._tableName,
             Limit: this._limit,
-            ...formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal),
             ...formatProjectionExpression(this._selections),
+            ...keyCond,
+            ...filterCond,
+            ...joinAttrbVals(keyAttribVals, filterAttribVals),
         };
     }
 }
+
+const joinAttrbVals = (a, b) => {
+    return _.merge(a, b);
+};
 
 const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, rangeVal: any) => {
     const conditionParts: string[] = [];
@@ -104,16 +111,35 @@ const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, ran
         _.set(attribVals, `:${rangeKey}`, rangeVal);
     }
 
-    return {
-        KeyConditionExpression: _.join(conditionParts, " and "),
-        ExpressionAttributeValues: attribVals,
-    }
+    return [
+        { KeyConditionExpression: _.join(conditionParts, " and ") },
+        { ExpressionAttributeValues: attribVals },
+    ];
 };
 
+const formatFilterCondition = (filters) => {
+    const f = "";
+    const attribs = {};
+
+    const filterExp = _.reduce(filters, (acc, f) => {
+        if (f.type === 'eq') {
+            _.set(attribs, `:${f.attrib}`, f.val);
+            const queryPart = `${f.attrib} = :${f.attrib}`;
+
+            return _.join(_.compact([acc, queryPart]), " and ")
+        }
+        return acc;
+    }, "");
+
+    return [
+        { FilterExpression: _.isEmpty(filterExp) ? undefined : filterExp },
+        { ExpressionAttributeValues: attribs },
+    ];
+};
 
 const formatProjectionExpression = (proj) => {
     if (_.isEmpty(proj)) {
-        return {};
+        return;
     }
 
     return {
