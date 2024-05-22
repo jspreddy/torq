@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { reserved } from './dynamo_reserved_words';
 
 export class Query {
     static DEFAULT_LIMIT: number = 25;
@@ -80,60 +81,78 @@ export class Query {
     }
 
     toDynamo(): Object {
-        const [keyCond, keyAttribVals] = formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal);
-        const [filterCond, filterAttribVals] = formatFilterCondition(this._filters);
+        const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal);
+        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
         return {
             TableName: this._tableName,
             Limit: this._limit,
             ...formatProjectionExpression(this._selections),
             ...keyCond,
             ...filterCond,
-            ...joinAttrbVals(keyAttribVals, filterAttribVals),
+            ..._.merge(keyAttribVals, filterAttribVals),
+            ..._.merge(keyAttribNames, filterAttribNames),
         };
     }
 }
 
-const joinAttrbVals = (a, b) => {
-    return _.merge(a, b);
-};
-
 const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, rangeVal: any) => {
     const conditionParts: string[] = [];
     const attribVals = {};
+    const attribNames = {};
+    const kvSetter = (k, v) => {
+        if (_.indexOf(reserved, _.toUpper(k)) != -1) {
+            _.set(attribNames, `#${k}`, k);
+            conditionParts.push(`#${k} = :${k}`);
+        }
+        else {
+            conditionParts.push(`${k} = :${k}`);
+        }
+
+        _.set(attribVals, `:${k}`, v);
+    };
 
     if (hashKey && hashVal) {
-        conditionParts.push(`${hashKey} = :${hashKey}`);
-        _.set(attribVals, `:${hashKey}`, hashVal);
+        kvSetter(hashKey, hashVal);
     }
 
     if (rangeKey && rangeVal) {
-        conditionParts.push(`${rangeKey} = :${rangeKey}`);
-        _.set(attribVals, `:${rangeKey}`, rangeVal);
+        kvSetter(rangeKey, rangeVal);
     }
 
     return [
         { KeyConditionExpression: _.join(conditionParts, " and ") },
-        { ExpressionAttributeValues: attribVals },
+        { ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals },
+        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
     ];
 };
 
 const formatFilterCondition = (filters) => {
-    const f = "";
-    const attribs = {};
+    const filterParts: string[] = [];
+    const attribVals = {};
+    const attribNames = {};
 
-    const filterExp = _.reduce(filters, (acc, f) => {
+    _.each(filters, f => {
         if (f.type === 'eq') {
-            _.set(attribs, `:${f.attrib}`, f.val);
-            const queryPart = `${f.attrib} = :${f.attrib}`;
+            const key = f.attrib;
+            const val = f.val;
+            if (_.indexOf(reserved, _.toUpper(f.attrib)) != -1) {
+                _.set(attribNames, `#${key}`, key);
+                filterParts.push(`#${key} = :${key}`);
+            }
+            else {
+                filterParts.push(`${key} = :${key}`);
+            }
 
-            return _.join(_.compact([acc, queryPart]), " and ")
+            _.set(attribVals, `:${key}`, val);
         }
-        return acc;
-    }, "");
+    });
+
+    const filterExp = _.join(filterParts, ' and ');
 
     return [
         { FilterExpression: _.isEmpty(filterExp) ? undefined : filterExp },
-        { ExpressionAttributeValues: attribs },
+        { ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals },
+        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
     ];
 };
 

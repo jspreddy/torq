@@ -1,4 +1,5 @@
 import { Query } from '../../src/query';
+import { reserved } from '../../src/dynamo_reserved_words';
 
 describe('class: Query', () => {
 
@@ -109,6 +110,41 @@ describe('class: Query', () => {
         });
     });
 
+    describe('Reserved Names', () => {
+        it('should convert dynamo reserved names to ExpressionAttributeNames', async () => {
+            const x = new Query('some-table-name', 'pk', 'BY');
 
+            x.select(['asdf', 'pqrs'])
+                .where.hash.eq('aasdf')
+                .where.range.eq('sai')
+                .filter.eq('ABORT', true)
+                .filter.eq('ACTION', 'stop!')
+                .filter.eq('ATOMIC', 'Bam!!!!')
+                .filter.eq('something', 'not to be exp named')
+                .limit(10);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Limit: 10,
+                ProjectionExpression: "asdf, pqrs",
+                KeyConditionExpression: "pk = :pk and #BY = :BY",
+                FilterExpression: "#ABORT = :ABORT and #ACTION = :ACTION and #ATOMIC = :ATOMIC and something = :something",
+                ExpressionAttributeNames: {
+                    '#BY': 'BY',
+                    '#ABORT': 'ABORT',
+                    '#ACTION': 'ACTION',
+                    '#ATOMIC': 'ATOMIC',
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'aasdf',
+                    ':BY': 'sai',
+                    ':ABORT': true,
+                    ':ACTION': 'stop!',
+                    ':ATOMIC': 'Bam!!!!',
+                    ':something': 'not to be exp named',
+                },
+            });
+        });
+    });
 
 });
