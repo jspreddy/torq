@@ -1,4 +1,4 @@
-import { Query } from 'jspreddy-test';
+import { Query } from '@jspreddy/midas';
 // import { Query } from '../../dist/main';
 // import { Query } from '../../dist/module';
 

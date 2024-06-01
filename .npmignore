@@ -11,3 +11,4 @@ babel.config.json
 eslint.config.mjs
 *.tgz
 *.gz
+.github
