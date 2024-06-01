@@ -1,4 +1,4 @@
-import { Query } from '../../src/query';
+import { Query } from '../../src';
 import { reserved } from '../../src/dynamo_reserved_words';
 
 describe('class: Query', () => {

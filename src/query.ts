@@ -1,3 +1,4 @@
+// @ts-ignore
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
@@ -80,7 +81,7 @@ export class Query {
         return this;
     }
 
-    toDynamo(): Object {
+    toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
         return {

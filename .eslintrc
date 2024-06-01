@@ -1,9 +1,0 @@
-{
-    "extends": "airbnb-base/legacy",
-    "files": [
-        "src/**/*.js",
-        "tests/**/*.js",
-        "src/**/*.ts",
-        "tests/**/*.ts"
-    ]
-}
