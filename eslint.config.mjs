@@ -1,9 +1,68 @@
-// @ts-check
-
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import jestPlugin from 'eslint-plugin-jest';
+import globals from 'globals';
 
-export default tseslint.config(
+// WTF is tseslint.config(): https://typescript-eslint.io/packages/typescript-eslint#config
+// It is there to provide typed and autocompleted experience for editing configs.
+
+// How to use it: https://typescript-eslint.io/packages/typescript-eslint#usage-with-other-plugins
+// Still needed to disable some type checking rules to get the config to not throw type errors for jest plugin.
+
+const config = tseslint.config(
+    {
+        // config with just ignores is the replacement for `.eslintignore`
+        ignores: [
+            "dist",
+            "reference_material",
+            ".idea"
+        ],
+    },
     eslint.configs.recommended,
-    ...tseslint.configs.recommended,
+    {
+        plugins: {
+            '@typescript-eslint': tseslint.plugin,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            jest: jestPlugin,
+        },
+        languageOptions: {
+            parser: tseslint.parser,
+            parserOptions: {
+                project: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            globals: {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                ...globals.node,
+            }
+        },
+        rules: {
+            '@typescript-eslint/no-unsafe-argument': 'error',
+            '@typescript-eslint/no-unsafe-assignment': 'error',
+            '@typescript-eslint/no-unsafe-call': 'error',
+            '@typescript-eslint/no-unsafe-member-access': 'error',
+            '@typescript-eslint/no-unsafe-return': 'error',
+        },
+    },
+    {
+        // disable type-aware linting on JS files
+        files: ['**/*.js'],
+        ...tseslint.configs.disableTypeChecked,
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    {
+        // enable jest rules on test files
+        files: [
+            'tests/**',
+            '**/*.test.js'
+        ],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        ...jestPlugin.configs['flat/recommended'],
+    },
 );
+
+// Run this config using node eslint.config.mjs to see what the it resolves to.
+// console.log(config);
+
+export default config;
