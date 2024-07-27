@@ -11,20 +11,23 @@ import globals from 'globals';
 
 const config = tseslint.config(
     {
-        // config with just ignores is the replacement for `.eslintignore`
+        // global ignores for eslint.
         ignores: [
-            "dist",
-            "reference_material",
-            ".idea"
+            ".github/",
+            ".idea/",
+            ".vscode/",
+            "dist/",
+            "reference_material/",
         ],
     },
-    eslint.configs.recommended,
     {
         plugins: {
             '@typescript-eslint': tseslint.plugin,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            jest: jestPlugin,
         },
+        extends: [
+            eslint.configs.recommended,
+            ...tseslint.configs.recommended,
+        ],
         languageOptions: {
             parser: tseslint.parser,
             parserOptions: {
@@ -45,11 +48,12 @@ const config = tseslint.config(
             '@typescript-eslint/no-unsafe-return': 'error',
         },
     },
+
     {
-        // disable type-aware linting on JS files
-        files: ['**/*.js'],
-        ...tseslint.configs.disableTypeChecked,
+        files: ['src/**/*.js'],
+        ...tseslint.configs.disableTypeChecked, // disable type-aware linting on JS files
     },
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     {
         // enable jest rules on test files
