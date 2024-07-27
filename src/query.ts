@@ -1,14 +1,13 @@
-// @ts-ignore
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
 export class Query {
-    static DEFAULT_LIMIT: number = 25;
+    static DEFAULT_LIMIT = 25;
 
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
-    private _selections: Array<string>;
+    private _selections: string[];
     private _hashVal: string;
     private _rangeVal: string;
     private _filters: Array<object>;
@@ -38,7 +37,7 @@ export class Query {
         this._filters = [];
     }
 
-    select(cols: Array<string>) {
+    select(cols: string[]) {
         this._selections = cols;
         return this;
     }

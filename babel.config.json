@@ -1,5 +1,6 @@
 // using babel for test compilation to run with jest.
 // packaging does not use babel.
+// https://jestjs.io/docs/getting-started#using-typescript
 {
   "presets": [
     [
@@ -12,5 +13,5 @@
     ],
     "@babel/preset-typescript"
   ],
-  "plugins": []
+  "plugins": [ ]
 }
