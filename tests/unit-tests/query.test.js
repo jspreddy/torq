@@ -167,21 +167,22 @@ describe('class: Query', () => {
         });
 
         it('should return correct beginswith query for reserved attribute name', async () => {
-            const x = new Query('some-table-name', 'pk', 'ALTER');
+            const x = new Query('spies', 'name', 'AGENT');
 
             x.select()
-                .where.hash.eq('aasdf')
-                .where.range.beginsWith('asdf#');
+                .where.hash.eq('sai.jonnala')
+                .where.range.beginsWith('007#');
 
             expect(x.toDynamo()).toEqual({
-                TableName: 'some-table-name',
-                KeyConditionExpression: "pk = :pk and begins_with(#ALTER, :ALTER)",
+                TableName: 'spies',
+                KeyConditionExpression: "#name = :name and begins_with(#AGENT, :AGENT)",
                 ExpressionAttributeValues: {
-                    ":pk": 'aasdf',
-                    ':ALTER': 'asdf#',
+                    ":name": 'sai.jonnala',
+                    ':AGENT': '007#',
                 },
                 ExpressionAttributeNames: {
-                    "#ALTER": "ALTER",
+                    "#AGENT": "AGENT",
+                    "#name": "name",
                 },
                 Limit: 25,
             });
