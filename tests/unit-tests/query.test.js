@@ -40,7 +40,7 @@ describe('class: Query', () => {
         });
     });
 
-    describe('Hash and Range', () => {
+    describe('Hash and Range equals', () => {
         it('should return proper dynamo query for hash and range', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -61,7 +61,7 @@ describe('class: Query', () => {
         });
     });
 
-    describe('Range Begins With', () => {
+    describe('Range Operations', () => {
         it('should return correct begins with query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -75,6 +75,42 @@ describe('class: Query', () => {
                 ExpressionAttributeValues: {
                     ":pk": 'aasdf',
                     ':sk': 'asdf#'
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for ">" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.gt(10);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk > :sk",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':sk': 10
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for ">=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.gtEq('9000');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk >= :sk",
+                ExpressionAttributeValues: {
+                    ":pk": 'aasdf',
+                    ':sk': '9000'
                 },
                 Limit: 25,
             });
