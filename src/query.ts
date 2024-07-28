@@ -7,11 +7,13 @@ export class Query {
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
-    private _selections: string[];
-    private _hashVal: string;
-    private _rangeVal: string;
+    private _selections: string[] | undefined;
+    private _hashVal: string | undefined;
+    private _rangeVal: string | object | undefined;
+    private _keys: Array<object>;
     private _filters: Array<object>;
-    private _index: string;
+    // TODO: Implement index usage.
+    private _index: string | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
 
     get state() {
@@ -35,6 +37,7 @@ export class Query {
 
         // initialize here so that each query obj has its own filter list.
         this._filters = [];
+        this._keys = [];
     }
 
     select(cols: string[]) {
@@ -47,14 +50,21 @@ export class Query {
             hash: {
                 eq: (val: string): Query => {
                     this._hashVal = val;
+                    this._keys.push({ key: this._hashKey, val: val, type: 'hash-eq' });
                     return this;
                 }
             },
             range: {
                 eq: (val: string): Query => {
                     this._rangeVal = val;
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'eq' });
                     return this;
-                }
+                },
+                beginsWith: (val: string): Query => {
+                    this._rangeVal = { type: "begins_with", val };
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'begins_with' });
+                    return this;
+                },
             },
         };
         return whereSelectors;
@@ -70,10 +80,11 @@ export class Query {
         return filterConditions;
     }
 
-    using(index: string): Query {
-        this._index = index;
-        return this;
-    }
+    // TODO: Implement using an index.
+    // using(index: string): Query {
+    //     this._index = index;
+    //     return this;
+    // }
 
     limit(l: number): Query {
         this._limit = l ?? Query.DEFAULT_LIMIT;
@@ -81,7 +92,7 @@ export class Query {
     }
 
     toDynamo(): object {
-        const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._hashKey, this._hashVal, this._rangeKey, this._rangeVal);
+        const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
         return {
             TableName: this._tableName,
@@ -95,29 +106,53 @@ export class Query {
     }
 }
 
-const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, rangeVal: any) => {
+const isReserved = (name: string): boolean => {
+    // Does the upper cased "name" exists in the reserved words list.
+    return _.indexOf(reserved, _.toUpper(name)) != -1;
+}
+
+const replaceReservedNames = (conditions: Array<object>): Array<object> => {
+    return _.map(conditions, (cond) => {
+
+        if(isReserved(cond.key)){
+            return {
+                ...cond,
+                key: `#${cond.key}`,
+                actualName: cond.key,
+            };
+        }
+
+        return cond;
+    });
+};
+
+const formatKeyCondition = (conditions) => {
+    const updatedConditions = replaceReservedNames(conditions);
+
     const conditionParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
-    const kvSetter = (k, v) => {
-        if (_.indexOf(reserved, _.toUpper(k)) != -1) {
-            _.set(attribNames, `#${k}`, k);
-            conditionParts.push(`#${k} = :${k}`);
+
+    _.each(updatedConditions, (cond) => {
+        const {key, val, type, actualName} = cond;
+        const valRef = `:${_.trim(key, '#')}`;
+
+        switch(type) {
+            case "hash-eq":
+            case "eq":
+                conditionParts.push(`${key} = ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+            case "begins_with":
+                conditionParts.push(`begins_with(${key}, ${valRef})`);
+                _.set(attribVals, valRef, val);
+                break;
         }
-        else {
-            conditionParts.push(`${k} = :${k}`);
+
+        if(actualName) {
+            _.set(attribNames, key, actualName);
         }
-
-        _.set(attribVals, `:${k}`, v);
-    };
-
-    if (hashKey && hashVal) {
-        kvSetter(hashKey, hashVal);
-    }
-
-    if (rangeKey && rangeVal) {
-        kvSetter(rangeKey, rangeVal);
-    }
+    });
 
     return [
         { KeyConditionExpression: _.join(conditionParts, " and ") },
