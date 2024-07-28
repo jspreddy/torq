@@ -7,11 +7,11 @@ export class Query {
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
-    private _selections: string[];
-    private _hashVal: string;
-    private _rangeVal: string;
+    private _selections: string[] | undefined;
+    private _hashVal: string | undefined;
+    private _rangeVal: string | object | undefined;
     private _filters: Array<object>;
-    private _index: string;
+    private _index: string | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
 
     get state() {
@@ -54,7 +54,11 @@ export class Query {
                 eq: (val: string): Query => {
                     this._rangeVal = val;
                     return this;
-                }
+                },
+                beginsWith: (val: string): Query => {
+                    this._rangeVal = { type: "begins_with", val };
+                    return this;
+                },
             },
         };
         return whereSelectors;
@@ -95,12 +99,18 @@ export class Query {
     }
 }
 
-const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, rangeVal: any) => {
+const isReserved = (name: string): boolean => {
+    // Does the upper cased "name" exists in the reserved words list.
+    return _.indexOf(reserved, _.toUpper(name)) != -1;
+}
+
+const formatKeyCondition = (hashKey: string, hashVal: string, rangeKey: string, rangeVal: string | object) => {
     const conditionParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
-    const kvSetter = (k, v) => {
-        if (_.indexOf(reserved, _.toUpper(k)) != -1) {
+
+    const kvSetter = (k: string, v: string | object) => {
+        if (isReserved(k)) {
             _.set(attribNames, `#${k}`, k);
             conditionParts.push(`#${k} = :${k}`);
         }
@@ -115,7 +125,10 @@ const formatKeyCondition = (hashKey: string, hashVal: any, rangeKey: string, ran
         kvSetter(hashKey, hashVal);
     }
 
-    if (rangeKey && rangeVal) {
+    if (rangeKey && rangeVal && _.isObject(rangeVal) && rangeVal.type === "begins_with") {
+        conditionParts.push(`begins_with(${rangeKey}, :${rangeKey})`);
+        _.set(attribVals, `:${rangeKey}`, rangeVal.val);
+    } else if (rangeKey && rangeVal) {
         kvSetter(rangeKey, rangeVal);
     }
 

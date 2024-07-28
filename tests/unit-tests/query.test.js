@@ -61,6 +61,26 @@ describe('class: Query', () => {
         });
     });
 
+    describe('Range Begins With', () => {
+        it('should return correct begins with query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('aasdf')
+                .where.range.beginsWith('asdf#');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and begins_with(sk, :sk)",
+                ExpressionAttributeValues: {
+                    ":pk": 'aasdf',
+                    ':sk': 'asdf#'
+                },
+                Limit: 25,
+            });
+        });
+    });
+
     describe('selects', () => {
         it('should return proper selections', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
@@ -143,6 +163,27 @@ describe('class: Query', () => {
                     ':ATOMIC': 'Bam!!!!',
                     ':something': 'not to be exp named',
                 },
+            });
+        });
+
+        it('should return correct beginswith query for reserved attribute name', async () => {
+            const x = new Query('some-table-name', 'pk', 'ALTER');
+
+            x.select()
+                .where.hash.eq('aasdf')
+                .where.range.beginsWith('asdf#');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and begins_with(#ALTER, :ALTER)",
+                ExpressionAttributeValues: {
+                    ":pk": 'aasdf',
+                    ':ALTER': 'asdf#',
+                },
+                ExpressionAttributeNames: {
+                    "#ALTER": "ALTER",
+                },
+                Limit: 25,
             });
         });
     });
