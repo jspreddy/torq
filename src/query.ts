@@ -16,9 +16,7 @@ export class Query {
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
-    private _selections: string[] | undefined;
-    private _hashVal: string | undefined;
-    private _rangeVal: string | object | undefined;
+    private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
     // TODO: Implement index usage.
@@ -31,8 +29,7 @@ export class Query {
             hashKey: this._hashKey,
             rangeKey: this._rangeKey,
             selections: this._selections,
-            hashVal: this._hashVal,
-            rangeVal: this._rangeVal,
+            keys: this._keys,
             filters: this._filters,
             index: this._index,
             limit: this._limit,
@@ -47,6 +44,7 @@ export class Query {
         // initialize here so that each query obj has its own filter list.
         this._filters = [];
         this._keys = [];
+        this._selections = [];
     }
 
     select(cols: string[]) {
@@ -58,20 +56,25 @@ export class Query {
         const whereSelectors = {
             hash: {
                 eq: (val: string): Query => {
-                    this._hashVal = val;
                     this._keys.push({ key: this._hashKey, val: val, type: 'hash-eq' });
                     return this;
                 }
             },
             range: {
-                eq: (val: string): Query => {
-                    this._rangeVal = val;
+                eq: (val: DynamoValue): Query => {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'eq' });
                     return this;
                 },
-                beginsWith: (val: string): Query => {
-                    this._rangeVal = { type: "begins_with", val };
+                beginsWith: (val: DynamoValue): Query => {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'begins_with' });
+                    return this;
+                },
+                gt: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'gt' });
+                    return this;
+                },
+                gtEq: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'gtEq' });
                     return this;
                 },
             },
@@ -105,12 +108,12 @@ export class Query {
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
         return {
             TableName: this._tableName,
-            Limit: this._limit,
             ...formatProjectionExpression(this._selections),
             ...keyCond,
             ...filterCond,
-            ..._.merge(keyAttribVals, filterAttribVals),
             ..._.merge(keyAttribNames, filterAttribNames),
+            ..._.merge(keyAttribVals, filterAttribVals),
+            Limit: this._limit,
         };
     }
 }
@@ -152,6 +155,17 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
                 conditionParts.push(`${key} = ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
+
+            case "gt":
+                conditionParts.push(`${key} > ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "gtEq":
+                conditionParts.push(`${key} >= ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
             case "begins_with":
                 conditionParts.push(`begins_with(${key}, ${valRef})`);
                 _.set(attribVals, valRef, val);

@@ -1,5 +1,4 @@
 import { Query } from '../../src';
-// import { reserved } from '../../src/dynamo_reserved_words';
 
 describe('class: Query', () => {
 
@@ -28,14 +27,31 @@ describe('class: Query', () => {
                 hashKey: 'pk',
                 rangeKey: 'sk',
                 selections: ['asdf', 'pqrs'],
-                hashVal: 'aasdf',
-                rangeVal: '1235:238h9084',
+                keys: [
+                    { key: "pk", val: "aasdf", type: "hash-eq" },
+                    { key: "sk", val: "1235:238h9084", type: "eq" },
+                ],
                 filters: [
                     { key: 'flower', val: 'rose', type: 'eq' },
                     { key: 'isPolinated', val: true, type: 'eq' }
                 ],
                 index: undefined,
                 limit: 10
+            });
+
+            expect(x.toDynamo()).toEqual({
+                TableName: "some-table-name",
+                ProjectionExpression: "asdf, pqrs",
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "flower = :flower and isPolinated = :isPolinated",
+                ExpressionAttributeNames: undefined,
+                ExpressionAttributeValues: {
+                    ":flower": "rose",
+                    ":isPolinated": true,
+                    ":pk": "aasdf",
+                    ":sk": "1235:238h9084",
+                },
+                Limit: 10,
             });
         });
     });
@@ -109,7 +125,7 @@ describe('class: Query', () => {
                 TableName: 'some-table-name',
                 KeyConditionExpression: "pk = :pk and sk >= :sk",
                 ExpressionAttributeValues: {
-                    ":pk": 'aasdf',
+                    ":pk": 'sai.jonnala',
                     ':sk': '9000'
                 },
                 Limit: 25,
