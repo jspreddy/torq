@@ -1,6 +1,15 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
+type DynamoValue = string | number | boolean;
+
+type Condition = {
+    key: string;
+    val: DynamoValue;
+    type: string;
+    actualName?: string,
+};
+
 export class Query {
     static DEFAULT_LIMIT = 25;
 
@@ -10,8 +19,8 @@ export class Query {
     private _selections: string[] | undefined;
     private _hashVal: string | undefined;
     private _rangeVal: string | object | undefined;
-    private _keys: Array<object>;
-    private _filters: Array<object>;
+    private _keys: Array<Condition>;
+    private _filters: Array<Condition>;
     // TODO: Implement index usage.
     private _index: string | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
@@ -72,8 +81,8 @@ export class Query {
 
     get filter() {
         const filterConditions = {
-            eq: (attrib: string, val: any): Query => {
-                this._filters.push({ attrib, val, type: 'eq' });
+            eq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'eq' });
                 return this;
             }
         };
@@ -111,10 +120,10 @@ const isReserved = (name: string): boolean => {
     return _.indexOf(reserved, _.toUpper(name)) != -1;
 }
 
-const replaceReservedNames = (conditions: Array<object>): Array<object> => {
+const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> => {
     return _.map(conditions, (cond) => {
 
-        if(isReserved(cond.key)){
+        if (isReserved(cond.key)) {
             return {
                 ...cond,
                 key: `#${cond.key}`,
@@ -126,7 +135,7 @@ const replaceReservedNames = (conditions: Array<object>): Array<object> => {
     });
 };
 
-const formatKeyCondition = (conditions) => {
+const formatKeyCondition = (conditions: Array<Condition>) => {
     const updatedConditions = replaceReservedNames(conditions);
 
     const conditionParts: string[] = [];
@@ -134,10 +143,10 @@ const formatKeyCondition = (conditions) => {
     const attribNames = {};
 
     _.each(updatedConditions, (cond) => {
-        const {key, val, type, actualName} = cond;
+        const { key, val, type, actualName } = cond;
         const valRef = `:${_.trim(key, '#')}`;
 
-        switch(type) {
+        switch (type) {
             case "hash-eq":
             case "eq":
                 conditionParts.push(`${key} = ${valRef}`);
@@ -149,7 +158,7 @@ const formatKeyCondition = (conditions) => {
                 break;
         }
 
-        if(actualName) {
+        if (actualName) {
             _.set(attribNames, key, actualName);
         }
     });
@@ -161,24 +170,23 @@ const formatKeyCondition = (conditions) => {
     ];
 };
 
-const formatFilterCondition = (filters) => {
+const formatFilterCondition = (filters: Array<Condition>) => {
+    const updatedFilters = replaceReservedNames(filters);
+
     const filterParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
 
-    _.each(filters, f => {
-        if (f.type === 'eq') {
-            const key = f.attrib;
-            const val = f.val;
-            if (_.indexOf(reserved, _.toUpper(f.attrib)) != -1) {
-                _.set(attribNames, `#${key}`, key);
-                filterParts.push(`#${key} = :${key}`);
-            }
-            else {
-                filterParts.push(`${key} = :${key}`);
-            }
+    _.each(updatedFilters, f => {
+        const valRef = `:${_.trim(f.key, '#')}`;
 
-            _.set(attribVals, `:${key}`, val);
+        if (f.type === 'eq') {
+            _.set(attribVals, valRef, f.val);
+            filterParts.push(`${f.key} = ${valRef}`);
+        }
+
+        if (f.actualName) {
+            _.set(attribNames, f.key, f.actualName);
         }
     });
 
@@ -191,7 +199,7 @@ const formatFilterCondition = (filters) => {
     ];
 };
 
-const formatProjectionExpression = (proj) => {
+const formatProjectionExpression = (proj: Array<string>) => {
     if (_.isEmpty(proj)) {
         return;
     }

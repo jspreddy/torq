@@ -31,8 +31,8 @@ describe('class: Query', () => {
                 hashVal: 'aasdf',
                 rangeVal: '1235:238h9084',
                 filters: [
-                    { attrib: 'flower', val: 'rose', type: 'eq' },
-                    { attrib: 'isPolinated', val: true, type: 'eq' }
+                    { key: 'flower', val: 'rose', type: 'eq' },
+                    { key: 'isPolinated', val: true, type: 'eq' }
                 ],
                 index: undefined,
                 limit: 10
