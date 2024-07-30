@@ -1,17 +1,29 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
+
+type DynamoValue = string | number | boolean;
+type BetweenValues = {
+    start: DynamoValue,
+    end: DynamoValue,
+};
+
+type Condition = {
+    key: string;
+    val: DynamoValue | BetweenValues;
+    type: string;
+    actualName?: string,
+};
+
 export class Query {
     static DEFAULT_LIMIT = 25;
 
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
-    private _selections: string[] | undefined;
-    private _hashVal: string | undefined;
-    private _rangeVal: string | object | undefined;
-    private _keys: Array<object>;
-    private _filters: Array<object>;
+    private _selections: string[];
+    private _keys: Array<Condition>;
+    private _filters: Array<Condition>;
     // TODO: Implement index usage.
     private _index: string | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
@@ -22,8 +34,7 @@ export class Query {
             hashKey: this._hashKey,
             rangeKey: this._rangeKey,
             selections: this._selections,
-            hashVal: this._hashVal,
-            rangeVal: this._rangeVal,
+            keys: this._keys,
             filters: this._filters,
             index: this._index,
             limit: this._limit,
@@ -38,6 +49,7 @@ export class Query {
         // initialize here so that each query obj has its own filter list.
         this._filters = [];
         this._keys = [];
+        this._selections = [];
     }
 
     select(cols: string[]) {
@@ -49,20 +61,44 @@ export class Query {
         const whereSelectors = {
             hash: {
                 eq: (val: string): Query => {
-                    this._hashVal = val;
                     this._keys.push({ key: this._hashKey, val: val, type: 'hash-eq' });
                     return this;
                 }
             },
             range: {
-                eq: (val: string): Query => {
-                    this._rangeVal = val;
+                eq: (val: DynamoValue): Query => {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'eq' });
                     return this;
                 },
-                beginsWith: (val: string): Query => {
-                    this._rangeVal = { type: "begins_with", val };
+                beginsWith: (val: DynamoValue): Query => {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'begins_with' });
+                    return this;
+                },
+                gt: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'gt' });
+                    return this;
+                },
+                gtEq: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'gtEq' });
+                    return this;
+                },
+                lt: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'lt' });
+                    return this;
+                },
+                ltEq: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'ltEq' });
+                    return this;
+                },
+                between: (start: DynamoValue, end: DynamoValue): Query => {
+                    this._keys.push({
+                        key: this._rangeKey,
+                        val: {
+                            start,
+                            end,
+                        },
+                        type: 'between',
+                    });
                     return this;
                 },
             },
@@ -72,8 +108,8 @@ export class Query {
 
     get filter() {
         const filterConditions = {
-            eq: (attrib: string, val: any): Query => {
-                this._filters.push({ attrib, val, type: 'eq' });
+            eq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'eq' });
                 return this;
             }
         };
@@ -96,12 +132,12 @@ export class Query {
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
         return {
             TableName: this._tableName,
-            Limit: this._limit,
             ...formatProjectionExpression(this._selections),
             ...keyCond,
             ...filterCond,
-            ..._.merge(keyAttribVals, filterAttribVals),
             ..._.merge(keyAttribNames, filterAttribNames),
+            ..._.merge(keyAttribVals, filterAttribVals),
+            Limit: this._limit,
         };
     }
 }
@@ -111,10 +147,10 @@ const isReserved = (name: string): boolean => {
     return _.indexOf(reserved, _.toUpper(name)) != -1;
 }
 
-const replaceReservedNames = (conditions: Array<object>): Array<object> => {
+const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> => {
     return _.map(conditions, (cond) => {
 
-        if(isReserved(cond.key)){
+        if (isReserved(cond.key)) {
             return {
                 ...cond,
                 key: `#${cond.key}`,
@@ -126,7 +162,7 @@ const replaceReservedNames = (conditions: Array<object>): Array<object> => {
     });
 };
 
-const formatKeyCondition = (conditions) => {
+const formatKeyCondition = (conditions: Array<Condition>) => {
     const updatedConditions = replaceReservedNames(conditions);
 
     const conditionParts: string[] = [];
@@ -134,22 +170,53 @@ const formatKeyCondition = (conditions) => {
     const attribNames = {};
 
     _.each(updatedConditions, (cond) => {
-        const {key, val, type, actualName} = cond;
+        const { key, val, type, actualName } = cond;
         const valRef = `:${_.trim(key, '#')}`;
 
-        switch(type) {
+        switch (type) {
             case "hash-eq":
             case "eq":
                 conditionParts.push(`${key} = ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
+
+            case "gt":
+                conditionParts.push(`${key} > ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "gtEq":
+                conditionParts.push(`${key} >= ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "lt":
+                conditionParts.push(`${key} < ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "ltEq":
+                conditionParts.push(`${key} <= ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "between": {
+                const valRefStart = `${valRef}_start`;
+                const valRefEnd = `${valRef}_end`;
+                const between = val as BetweenValues;
+                conditionParts.push(`${key} BETWEEN ${valRefStart} AND ${valRefEnd}`);
+                _.set(attribVals, valRefStart, between.start);
+                _.set(attribVals, valRefEnd, between.end);
+                break;
+            }
+
             case "begins_with":
                 conditionParts.push(`begins_with(${key}, ${valRef})`);
                 _.set(attribVals, valRef, val);
                 break;
         }
 
-        if(actualName) {
+        if (actualName) {
             _.set(attribNames, key, actualName);
         }
     });
@@ -161,24 +228,23 @@ const formatKeyCondition = (conditions) => {
     ];
 };
 
-const formatFilterCondition = (filters) => {
+const formatFilterCondition = (filters: Array<Condition>) => {
+    const updatedFilters = replaceReservedNames(filters);
+
     const filterParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
 
-    _.each(filters, f => {
-        if (f.type === 'eq') {
-            const key = f.attrib;
-            const val = f.val;
-            if (_.indexOf(reserved, _.toUpper(f.attrib)) != -1) {
-                _.set(attribNames, `#${key}`, key);
-                filterParts.push(`#${key} = :${key}`);
-            }
-            else {
-                filterParts.push(`${key} = :${key}`);
-            }
+    _.each(updatedFilters, f => {
+        const valRef = `:${_.trim(f.key, '#')}`;
 
-            _.set(attribVals, `:${key}`, val);
+        if (f.type === 'eq') {
+            _.set(attribVals, valRef, f.val);
+            filterParts.push(`${f.key} = ${valRef}`);
+        }
+
+        if (f.actualName) {
+            _.set(attribNames, f.key, f.actualName);
         }
     });
 
@@ -191,7 +257,7 @@ const formatFilterCondition = (filters) => {
     ];
 };
 
-const formatProjectionExpression = (proj) => {
+const formatProjectionExpression = (proj: Array<string>) => {
     if (_.isEmpty(proj)) {
         return;
     }

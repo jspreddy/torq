@@ -1,5 +1,4 @@
 import { Query } from '../../src';
-// import { reserved } from '../../src/dynamo_reserved_words';
 
 describe('class: Query', () => {
 
@@ -28,19 +27,36 @@ describe('class: Query', () => {
                 hashKey: 'pk',
                 rangeKey: 'sk',
                 selections: ['asdf', 'pqrs'],
-                hashVal: 'aasdf',
-                rangeVal: '1235:238h9084',
+                keys: [
+                    { key: "pk", val: "aasdf", type: "hash-eq" },
+                    { key: "sk", val: "1235:238h9084", type: "eq" },
+                ],
                 filters: [
-                    { attrib: 'flower', val: 'rose', type: 'eq' },
-                    { attrib: 'isPolinated', val: true, type: 'eq' }
+                    { key: 'flower', val: 'rose', type: 'eq' },
+                    { key: 'isPolinated', val: true, type: 'eq' }
                 ],
                 index: undefined,
                 limit: 10
             });
+
+            expect(x.toDynamo()).toEqual({
+                TableName: "some-table-name",
+                ProjectionExpression: "asdf, pqrs",
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "flower = :flower and isPolinated = :isPolinated",
+                ExpressionAttributeNames: undefined,
+                ExpressionAttributeValues: {
+                    ":flower": "rose",
+                    ":isPolinated": true,
+                    ":pk": "aasdf",
+                    ":sk": "1235:238h9084",
+                },
+                Limit: 10,
+            });
         });
     });
 
-    describe('Hash and Range', () => {
+    describe('Hash and Range equals', () => {
         it('should return proper dynamo query for hash and range', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -61,8 +77,8 @@ describe('class: Query', () => {
         });
     });
 
-    describe('Range Begins With', () => {
-        it('should return correct begins with query', async () => {
+    describe('Range Operations', () => {
+        it('should return correct begins_with query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -75,6 +91,100 @@ describe('class: Query', () => {
                 ExpressionAttributeValues: {
                     ":pk": 'aasdf',
                     ':sk': 'asdf#'
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for ">" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.gt(10);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk > :sk",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':sk': 10
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for ">=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.gtEq('9000');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk >= :sk",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':sk': '9000'
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for "<" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'height');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.lt(6);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and height < :height",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':height': 6,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for "<=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'height');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.ltEq(5.11);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and height <= :height",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':height': 5.11,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct between query', async () => {
+            const x = new Query('git-history-table', 'pk', 'date');
+
+            x.select()
+                .where.hash.eq('commit')
+                .where.range.between('2024-01-01', '2024-12-31');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'git-history-table',
+                KeyConditionExpression: "pk = :pk and #date BETWEEN :date_start AND :date_end",
+                ExpressionAttributeValues: {
+                    ":pk": 'commit',
+                    ':date_start': '2024-01-01',
+                    ':date_end': '2024-12-31',
+                },
+                ExpressionAttributeNames: {
+                    "#date": "date",
                 },
                 Limit: 25,
             });
