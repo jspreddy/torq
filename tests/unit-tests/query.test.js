@@ -78,7 +78,7 @@ describe('class: Query', () => {
     });
 
     describe('Range Operations', () => {
-        it('should return correct begins with query', async () => {
+        it('should return correct begins_with query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -127,6 +127,42 @@ describe('class: Query', () => {
                 ExpressionAttributeValues: {
                     ":pk": 'sai.jonnala',
                     ':sk': '9000'
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for "<" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'height');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.lt(6);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and height < :height",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':height': 6,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return query for "<=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'height');
+
+            x.select()
+                .where.hash.eq('sai.jonnala')
+                .where.range.ltEq(5.11);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and height <= :height",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ':height': 5.11,
                 },
                 Limit: 25,
             });

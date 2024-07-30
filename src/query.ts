@@ -77,6 +77,14 @@ export class Query {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'gtEq' });
                     return this;
                 },
+                lt: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'lt' });
+                    return this;
+                },
+                ltEq: (val: DynamoValue): Query => {
+                    this._keys.push({ key: this._rangeKey, val: val, type: 'ltEq' });
+                    return this;
+                },
             },
         };
         return whereSelectors;
@@ -163,6 +171,16 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
 
             case "gtEq":
                 conditionParts.push(`${key} >= ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "lt":
+                conditionParts.push(`${key} < ${valRef}`);
+                _.set(attribVals, valRef, val);
+                break;
+
+            case "ltEq":
+                conditionParts.push(`${key} <= ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
