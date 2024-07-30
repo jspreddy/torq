@@ -167,6 +167,28 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct between query', async () => {
+            const x = new Query('git-history-table', 'pk', 'date');
+
+            x.select()
+                .where.hash.eq('commit')
+                .where.range.between('2024-01-01', '2024-12-31');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'git-history-table',
+                KeyConditionExpression: "pk = :pk and #date BETWEEN :date_start AND :date_end",
+                ExpressionAttributeValues: {
+                    ":pk": 'commit',
+                    ':date_start': '2024-01-01',
+                    ':date_end': '2024-12-31',
+                },
+                ExpressionAttributeNames: {
+                    "#date": "date",
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('selects', () => {

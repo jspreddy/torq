@@ -1,11 +1,16 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
+
 type DynamoValue = string | number | boolean;
+type BetweenValues = {
+    start: DynamoValue,
+    end: DynamoValue,
+};
 
 type Condition = {
     key: string;
-    val: DynamoValue;
+    val: DynamoValue | BetweenValues;
     type: string;
     actualName?: string,
 };
@@ -83,6 +88,17 @@ export class Query {
                 },
                 ltEq: (val: DynamoValue): Query => {
                     this._keys.push({ key: this._rangeKey, val: val, type: 'ltEq' });
+                    return this;
+                },
+                between: (start: DynamoValue, end: DynamoValue): Query => {
+                    this._keys.push({
+                        key: this._rangeKey,
+                        val: {
+                            start,
+                            end,
+                        },
+                        type: 'between',
+                    });
                     return this;
                 },
             },
@@ -183,6 +199,16 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
                 conditionParts.push(`${key} <= ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
+
+            case "between": {
+                const valRefStart = `${valRef}_start`;
+                const valRefEnd = `${valRef}_end`;
+                const between = val as BetweenValues;
+                conditionParts.push(`${key} BETWEEN ${valRefStart} AND ${valRefEnd}`);
+                _.set(attribVals, valRefStart, between.start);
+                _.set(attribVals, valRefEnd, between.end);
+                break;
+            }
 
             case "begins_with":
                 conditionParts.push(`begins_with(${key}, ${valRef})`);
