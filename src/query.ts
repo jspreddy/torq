@@ -112,6 +112,10 @@ export class Query {
                 this._filters.push({ key, val, type: 'eq' });
                 return this;
             },
+            notEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'notEq' });
+                return this;
+            },
             beginsWith: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val, type: 'begins_with' });
                 return this;
@@ -262,6 +266,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
             case 'eq':
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`${f.key} = ${valRef}`);
+                break;
+
+            case 'notEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} <> ${valRef}`);
                 break;
 
             case 'gt':
