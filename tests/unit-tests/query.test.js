@@ -238,6 +238,27 @@ describe('class: Query', () => {
                 },
             });
         });
+
+        it('should return correct begins_with query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.beginsWith('flower', 'red');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "begins_with(flower, :flower)",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":flower": "red",
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved Names', () => {

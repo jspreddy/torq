@@ -111,7 +111,11 @@ export class Query {
             eq: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val, type: 'eq' });
                 return this;
-            }
+            },
+            beginsWith: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'begins_with' })
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -241,6 +245,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
         if (f.type === 'eq') {
             _.set(attribVals, valRef, f.val);
             filterParts.push(`${f.key} = ${valRef}`);
+        }
+
+        if (f.type === 'begins_with') {
+            _.set(attribVals, valRef, f.val);
+            filterParts.push(`begins_with(${f.key}, ${valRef})`);
         }
 
         if (f.actualName) {
