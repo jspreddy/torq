@@ -409,7 +409,11 @@ describe('class: Query', () => {
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
                 KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "attribute_exists(flower) and attribute_exists(fruit) and attribute_exists(#connection)",
+                FilterExpression: stringer([
+                    "attribute_exists(flower)",
+                    "and attribute_exists(fruit)",
+                    "and attribute_exists(#connection)",
+                ]),
                 ExpressionAttributeValues: {
                     ":pk": 'asdf',
                     ':sk': 'asdf',
@@ -434,7 +438,11 @@ describe('class: Query', () => {
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
                 KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "attribute_exists(flower) and attribute_not_exists(fruit) and attribute_not_exists(#connection)",
+                FilterExpression: stringer([
+                    "attribute_exists(flower)",
+                    "and attribute_not_exists(fruit)",
+                    "and attribute_not_exists(#connection)",
+                ]),
                 ExpressionAttributeValues: {
                     ":pk": 'asdf',
                     ':sk': 'asdf',
@@ -519,7 +527,12 @@ describe('class: Query', () => {
                 Limit: 10,
                 ProjectionExpression: "asdf, pqrs",
                 KeyConditionExpression: "pk = :pk and #BY = :BY",
-                FilterExpression: "#ABORT = :ABORT and #ACTION = :ACTION and #ATOMIC = :ATOMIC and something = :something",
+                FilterExpression: stringer([
+                    "#ABORT = :ABORT",
+                    "and #ACTION = :ACTION",
+                    "and #ATOMIC = :ATOMIC",
+                    "and something = :something",
+                ]),
                 ExpressionAttributeNames: {
                     '#BY': 'BY',
                     '#ABORT': 'ABORT',
