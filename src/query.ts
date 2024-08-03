@@ -113,7 +113,23 @@ export class Query {
                 return this;
             },
             beginsWith: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val, type: 'begins_with' })
+                this._filters.push({ key, val, type: 'begins_with' });
+                return this;
+            },
+            gt: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'gt' });
+                return this;
+            },
+            gtEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'gtEq' });
+                return this;
+            },
+            lt: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'lt' });
+                return this;
+            },
+            ltEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'ltEq' });
                 return this;
             },
         };
@@ -242,14 +258,36 @@ const formatFilterCondition = (filters: Array<Condition>) => {
     _.each(updatedFilters, f => {
         const valRef = `:${_.trim(f.key, '#')}`;
 
-        if (f.type === 'eq') {
-            _.set(attribVals, valRef, f.val);
-            filterParts.push(`${f.key} = ${valRef}`);
-        }
+        switch (f.type) {
+            case 'eq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} = ${valRef}`);
+                break;
 
-        if (f.type === 'begins_with') {
-            _.set(attribVals, valRef, f.val);
-            filterParts.push(`begins_with(${f.key}, ${valRef})`);
+            case 'gt':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} > ${valRef}`);
+                break;
+
+            case 'gtEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} >= ${valRef}`);
+                break;
+
+            case 'lt':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} < ${valRef}`);
+                break;
+
+            case 'ltEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} <= ${valRef}`);
+                break;
+
+            case 'begins_with':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`begins_with(${f.key}, ${valRef})`);
+                break;
         }
 
         if (f.actualName) {
