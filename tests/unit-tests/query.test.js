@@ -239,6 +239,48 @@ describe('class: Query', () => {
             });
         });
 
+        it('should return correct query for "=" (equals) operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.eq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight = :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for "<>" (not equals) operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.notEq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight <> :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
         it('should return correct begins_with query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -343,26 +385,8 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
-        it('should return correct query for "<>" (not equals) operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
 
-            x.select()
-                .where.hash.eq('asdf')
-                .where.range.eq('asdf')
-                .filter.notEq('weight', 124);
 
-            expect(x.toDynamo()).toEqual({
-                TableName: 'some-table-name',
-                KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "weight <> :weight",
-                ExpressionAttributeValues: {
-                    ":pk": 'asdf',
-                    ':sk': 'asdf',
-                    ":weight": 124,
-                },
-                Limit: 25,
-            });
-        });
     });
 
     describe('Reserved Names', () => {
