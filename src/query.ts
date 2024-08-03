@@ -1,6 +1,21 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
+/**
+ * Type of attributes accepted by dynamo db.
+ */
+export enum DdbType {
+    String = 'S',
+    StringSet = 'SS',
+    Number = 'N',
+    NumberSet = 'NS',
+    Binary = 'B',
+    BinarySet = 'BS',
+    Boolean = 'BOOL',
+    Null = 'NULL',
+    List = 'L',
+    Map = 'M',
+}
 
 type DynamoValue = string | number | boolean;
 type BetweenValues = {
@@ -10,7 +25,7 @@ type BetweenValues = {
 
 type Condition = {
     key: string;
-    val?: DynamoValue | BetweenValues;
+    val?: DynamoValue | BetweenValues | DdbType;
     type: string;
     actualName?: string,
 };
@@ -142,6 +157,10 @@ export class Query {
             },
             attributeNotExists: (key: string): Query => {
                 this._filters.push({ key, type: 'attribute_not_exists' });
+                return this;
+            },
+            attributeType: (key: string, val: DdbType): Query => {
+                this._filters.push({ key, val, type: 'attribute_type' });
                 return this;
             },
         };
@@ -314,6 +333,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
             case 'attribute_not_exists':
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`attribute_not_exists(${f.key})`);
+                break;
+
+            case 'attribute_type':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_type(${f.key}, ${valRef})`);
                 break;
         }
 
