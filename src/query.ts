@@ -10,7 +10,7 @@ type BetweenValues = {
 
 type Condition = {
     key: string;
-    val: DynamoValue | BetweenValues;
+    val?: DynamoValue | BetweenValues;
     type: string;
     actualName?: string,
 };
@@ -116,10 +116,6 @@ export class Query {
                 this._filters.push({ key, val: val, type: 'notEq' });
                 return this;
             },
-            beginsWith: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val, type: 'begins_with' });
-                return this;
-            },
             gt: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val: val, type: 'gt' });
                 return this;
@@ -134,6 +130,14 @@ export class Query {
             },
             ltEq: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val: val, type: 'ltEq' });
+                return this;
+            },
+            beginsWith: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'begins_with' });
+                return this;
+            },
+            attributeExists: (key: string): Query => {
+                this._filters.push({ key, type: 'attribute_exists' });
                 return this;
             },
         };
@@ -296,6 +300,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
             case 'begins_with':
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`begins_with(${f.key}, ${valRef})`);
+                break;
+
+            case 'attribute_exists':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_exists(${f.key})`);
                 break;
         }
 

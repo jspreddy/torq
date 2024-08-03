@@ -281,27 +281,6 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct begins_with query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.select()
-                .where.hash.eq('asdf')
-                .where.range.eq('asdf')
-                .filter.beginsWith('flower', 'red');
-
-            expect(x.toDynamo()).toEqual({
-                TableName: 'some-table-name',
-                KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "begins_with(flower, :flower)",
-                ExpressionAttributeValues: {
-                    ":pk": 'asdf',
-                    ':sk': 'asdf',
-                    ":flower": "red",
-                },
-                Limit: 25,
-            });
-        });
-
         it('should return correct query for ">" operation', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -386,7 +365,51 @@ describe('class: Query', () => {
             });
         });
 
+        it('should return correct begins_with query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
 
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.beginsWith('flower', 'red');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "begins_with(flower, :flower)",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":flower": "red",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct attribute_exists query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.attributeExists('flower')
+                .filter.attributeExists('fruit')
+                .filter.attributeExists('connection');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "attribute_exists(flower) and attribute_exists(fruit) and attribute_exists(#connection)",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                },
+                ExpressionAttributeNames: {
+                    "#connection": "connection",
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved Names', () => {
