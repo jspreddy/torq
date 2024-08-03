@@ -140,6 +140,10 @@ export class Query {
                 this._filters.push({ key, type: 'attribute_exists' });
                 return this;
             },
+            attributeNotExists: (key: string): Query => {
+                this._filters.push({ key, type: 'attribute_not_exists' });
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -305,6 +309,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
             case 'attribute_exists':
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`attribute_exists(${f.key})`);
+                break;
+
+            case 'attribute_not_exists':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_not_exists(${f.key})`);
                 break;
         }
 

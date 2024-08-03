@@ -410,6 +410,31 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct attribute_not_exists query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.attributeExists('flower')
+                .filter.attributeNotExists('fruit')
+                .filter.attributeNotExists('connection');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "attribute_exists(flower) and attribute_not_exists(fruit) and attribute_not_exists(#connection)",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                },
+                ExpressionAttributeNames: {
+                    "#connection": "connection",
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved Names', () => {
