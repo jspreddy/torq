@@ -201,7 +201,7 @@ describe('class: Query', () => {
         });
     });
 
-    describe('selects', () => {
+    describe('Selects', () => {
         it('should return proper selections', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -503,6 +503,31 @@ describe('class: Query', () => {
                     ':plane': 'NULL',
                     ':aliens': 'L',
                     ':borg': 'M',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct contains query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.contains('name', "abb")
+                ;
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "contains(#name, :name)",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ':name': 'abb',
                 },
                 Limit: 25,
             });

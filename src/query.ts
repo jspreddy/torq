@@ -163,6 +163,10 @@ export class Query {
                 this._filters.push({ key, val, type: 'attribute_type' });
                 return this;
             },
+            contains: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'contains' });
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -338,6 +342,11 @@ const formatFilterCondition = (filters: Array<Condition>) => {
             case 'attribute_type':
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`attribute_type(${f.key}, ${valRef})`);
+                break;
+
+            case 'contains':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`contains(${f.key}, ${valRef})`);
                 break;
         }
 
