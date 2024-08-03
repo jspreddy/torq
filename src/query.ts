@@ -1,6 +1,21 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 
+/**
+ * Type of attributes accepted by dynamo db.
+ */
+export enum DdbType {
+    String = 'S',
+    StringSet = 'SS',
+    Number = 'N',
+    NumberSet = 'NS',
+    Binary = 'B',
+    BinarySet = 'BS',
+    Boolean = 'BOOL',
+    Null = 'NULL',
+    List = 'L',
+    Map = 'M',
+}
 
 type DynamoValue = string | number | boolean;
 type BetweenValues = {
@@ -10,7 +25,7 @@ type BetweenValues = {
 
 type Condition = {
     key: string;
-    val: DynamoValue | BetweenValues;
+    val?: DynamoValue | BetweenValues | DdbType;
     type: string;
     actualName?: string,
 };
@@ -111,7 +126,47 @@ export class Query {
             eq: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val, type: 'eq' });
                 return this;
-            }
+            },
+            notEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'notEq' });
+                return this;
+            },
+            gt: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'gt' });
+                return this;
+            },
+            gtEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'gtEq' });
+                return this;
+            },
+            lt: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'lt' });
+                return this;
+            },
+            ltEq: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val: val, type: 'ltEq' });
+                return this;
+            },
+            beginsWith: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'begins_with' });
+                return this;
+            },
+            attributeExists: (key: string): Query => {
+                this._filters.push({ key, type: 'attribute_exists' });
+                return this;
+            },
+            attributeNotExists: (key: string): Query => {
+                this._filters.push({ key, type: 'attribute_not_exists' });
+                return this;
+            },
+            attributeType: (key: string, val: DdbType): Query => {
+                this._filters.push({ key, val, type: 'attribute_type' });
+                return this;
+            },
+            contains: (key: string, val: DynamoValue): Query => {
+                this._filters.push({ key, val, type: 'contains' });
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -238,9 +293,61 @@ const formatFilterCondition = (filters: Array<Condition>) => {
     _.each(updatedFilters, f => {
         const valRef = `:${_.trim(f.key, '#')}`;
 
-        if (f.type === 'eq') {
-            _.set(attribVals, valRef, f.val);
-            filterParts.push(`${f.key} = ${valRef}`);
+        switch (f.type) {
+            case 'eq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} = ${valRef}`);
+                break;
+
+            case 'notEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} <> ${valRef}`);
+                break;
+
+            case 'gt':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} > ${valRef}`);
+                break;
+
+            case 'gtEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} >= ${valRef}`);
+                break;
+
+            case 'lt':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} < ${valRef}`);
+                break;
+
+            case 'ltEq':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`${f.key} <= ${valRef}`);
+                break;
+
+            case 'begins_with':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`begins_with(${f.key}, ${valRef})`);
+                break;
+
+            case 'attribute_exists':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_exists(${f.key})`);
+                break;
+
+            case 'attribute_not_exists':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_not_exists(${f.key})`);
+                break;
+
+            case 'attribute_type':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`attribute_type(${f.key}, ${valRef})`);
+                break;
+
+            case 'contains':
+                _.set(attribVals, valRef, f.val);
+                filterParts.push(`contains(${f.key}, ${valRef})`);
+                break;
         }
 
         if (f.actualName) {

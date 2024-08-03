@@ -1,4 +1,14 @@
-import { Query } from '../../src';
+import _ from 'lodash';
+import { Query, DdbType } from '../../src';
+
+/**
+ * Helper for joining multiple strings into one.
+ * @param {string[]} stringArray Array of strings.
+ * @returns joined string.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+const stringer = (stringArray) => _.join(stringArray, " ");
+
 
 describe('class: Query', () => {
 
@@ -191,7 +201,7 @@ describe('class: Query', () => {
         });
     });
 
-    describe('selects', () => {
+    describe('Selects', () => {
         it('should return proper selections', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
@@ -238,6 +248,290 @@ describe('class: Query', () => {
                 },
             });
         });
+
+        it('should return correct query for "=" (equals) operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.eq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight = :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for "<>" (not equals) operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.notEq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight <> :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for ">" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.gt('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight > :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for ">=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.gtEq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight >= :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for "<" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.lt('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight < :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for "<=" operation', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.ltEq('weight', 124);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "weight <= :weight",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":weight": 124,
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct begins_with query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.beginsWith('flower', 'red');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "begins_with(flower, :flower)",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ":flower": "red",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct attribute_exists query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.attributeExists('flower')
+                .filter.attributeExists('fruit')
+                .filter.attributeExists('connection');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: stringer([
+                    "attribute_exists(flower)",
+                    "and attribute_exists(fruit)",
+                    "and attribute_exists(#connection)",
+                ]),
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                },
+                ExpressionAttributeNames: {
+                    "#connection": "connection",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct attribute_not_exists query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.attributeExists('flower')
+                .filter.attributeNotExists('fruit')
+                .filter.attributeNotExists('connection');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: stringer([
+                    "attribute_exists(flower)",
+                    "and attribute_not_exists(fruit)",
+                    "and attribute_not_exists(#connection)",
+                ]),
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                },
+                ExpressionAttributeNames: {
+                    "#connection": "connection",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct attribute_type query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.attributeType('flower', DdbType.String)
+                .filter.attributeType('fruit', DdbType.StringSet)
+                .filter.attributeType('connection', DdbType.Number)
+                .filter.attributeType('car', DdbType.NumberSet)
+                .filter.attributeType('photo', DdbType.Binary)
+                .filter.attributeType('photos', DdbType.BinarySet)
+                .filter.attributeType('is_raw', DdbType.Boolean)
+                .filter.attributeType('plane', DdbType.Null)
+                .filter.attributeType('aliens', DdbType.List)
+                .filter.attributeType('borg', DdbType.Map)
+                ;
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: stringer([
+                    "attribute_type(flower, :flower)",
+                    "and attribute_type(fruit, :fruit)",
+                    "and attribute_type(#connection, :connection)",
+                    "and attribute_type(car, :car)",
+                    "and attribute_type(photo, :photo)",
+                    "and attribute_type(photos, :photos)",
+                    "and attribute_type(is_raw, :is_raw)",
+                    "and attribute_type(plane, :plane)",
+                    "and attribute_type(aliens, :aliens)",
+                    "and attribute_type(borg, :borg)",
+                ]),
+                ExpressionAttributeNames: {
+                    "#connection": "connection",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ':flower': 'S',
+                    ':fruit': 'SS',
+                    ':connection': 'N',
+                    ':car': 'NS',
+                    ':photo': 'B',
+                    ':photos': 'BS',
+                    ':is_raw': 'BOOL',
+                    ':plane': 'NULL',
+                    ':aliens': 'L',
+                    ':borg': 'M',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct contains query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.contains('name', "abb")
+                ;
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "contains(#name, :name)",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ':name': 'abb',
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved Names', () => {
@@ -258,7 +552,12 @@ describe('class: Query', () => {
                 Limit: 10,
                 ProjectionExpression: "asdf, pqrs",
                 KeyConditionExpression: "pk = :pk and #BY = :BY",
-                FilterExpression: "#ABORT = :ABORT and #ACTION = :ACTION and #ATOMIC = :ATOMIC and something = :something",
+                FilterExpression: stringer([
+                    "#ABORT = :ABORT",
+                    "and #ACTION = :ACTION",
+                    "and #ATOMIC = :ATOMIC",
+                    "and something = :something",
+                ]),
                 ExpressionAttributeNames: {
                     '#BY': 'BY',
                     '#ABORT': 'ABORT',
