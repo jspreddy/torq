@@ -178,7 +178,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct between query', async () => {
+        it('should return correct "between" query', async () => {
             const x = new Query('git-history-table', 'pk', 'date');
 
             x.select()
@@ -375,7 +375,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct begins_with query', async () => {
+        it('should return correct "begins_with" query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -396,7 +396,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct attribute_exists query', async () => {
+        it('should return correct "attribute_exists" query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -425,7 +425,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct attribute_not_exists query', async () => {
+        it('should return correct "attribute_not_exists" query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -454,7 +454,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct attribute_type query', async () => {
+        it('should return correct "attribute_type" query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -508,7 +508,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should return correct contains query', async () => {
+        it('should return correct "contains" query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.select()
@@ -534,7 +534,7 @@ describe('class: Query', () => {
         });
     });
 
-    describe('Reserved Names', () => {
+    describe('Reserved & Special Char Names', () => {
         it('should convert dynamo reserved names to ExpressionAttributeNames', async () => {
             const x = new Query('some-table-name', 'pk', 'BY');
 
@@ -571,6 +571,39 @@ describe('class: Query', () => {
                     ':ACTION': 'stop!',
                     ':ATOMIC': 'Bam!!!!',
                     ':something': 'not to be exp named',
+                },
+            });
+        });
+
+        it('should convert "_names" to ExpressionAttributeNames', async () => {
+            const x = new Query('some-table-name', '_friend', '_best');
+
+            x.select(['asdf', 'pqrs'])
+                .where.hash.eq('ramana')
+                .where.range.eq('bestie')
+                .filter.eq('_test', true)
+                .filter.eq('__test', 'stop!');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Limit: 25,
+                ProjectionExpression: "asdf, pqrs",
+                KeyConditionExpression: "#_friend = :_friend and #_best = :_best",
+                FilterExpression: stringer([
+                    "#_test = :_test",
+                    "and #__test = :__test",
+                ]),
+                ExpressionAttributeNames: {
+                    '#_friend': '_friend',
+                    '#_best': '_best',
+                    '#_test': '_test',
+                    '#__test': '__test',
+                },
+                ExpressionAttributeValues: {
+                    ':_friend': 'ramana',
+                    ':_best': 'bestie',
+                    ':_test': true,
+                    ':__test': 'stop!',
                 },
             });
         });

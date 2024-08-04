@@ -213,6 +213,14 @@ const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> =>
             };
         }
 
+        if (_.startsWith(cond.key, "_")) {
+            return {
+                ...cond,
+                key: `#${cond.key}`,
+                actualName: cond.key,
+            };
+        }
+
         return cond;
     });
 };
