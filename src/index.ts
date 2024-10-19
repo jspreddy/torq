@@ -1,3 +1,3 @@
-export { Query, DdbType } from './query';
+export { Query, DdbType, Operation } from './query';
 
 export const x = {};
