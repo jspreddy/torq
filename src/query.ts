@@ -22,10 +22,20 @@ type BetweenValues = {
     start: DynamoValue,
     end: DynamoValue,
 };
+export enum Operation {
+    Gt = '>',
+    GtEq = '>=',
+    Lt = '<',
+    LtEq = '<=',
+}
+type SizeValue = {
+    val: DynamoValue,
+    op: Operation,
+};
 
 type Condition = {
     key: string;
-    val?: DynamoValue | BetweenValues | DdbType;
+    val?: DynamoValue | BetweenValues | DdbType | SizeValue;
     type: string;
     actualName?: string,
 };
@@ -165,6 +175,17 @@ export class Query {
             },
             contains: (key: string, val: DynamoValue): Query => {
                 this._filters.push({ key, val, type: 'contains' });
+                return this;
+            },
+            size: (key: string, op: Operation, val: DynamoValue): Query => {
+                this._filters.push({
+                    key,
+                    val: {
+                        val,
+                        op,
+                    },
+                    type: 'size',
+                });
                 return this;
             },
         };
@@ -356,6 +377,14 @@ const formatFilterCondition = (filters: Array<Condition>) => {
                 _.set(attribVals, valRef, f.val);
                 filterParts.push(`contains(${f.key}, ${valRef})`);
                 break;
+
+            case 'size': {
+                const sizeVal = f.val as SizeValue;
+                const newValRef = `:size_${_.trim(valRef, ':')}`;
+                _.set(attribVals, newValRef, sizeVal.val);
+                filterParts.push(`size(${f.key}) ${sizeVal.op} ${newValRef}`);
+                break;
+            }
         }
 
         if (f.actualName) {

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Query, DdbType } from '../../src';
+import { Query, DdbType, Operation } from '../../src';
 
 /**
  * Helper for joining multiple strings into one.
@@ -528,6 +528,33 @@ describe('class: Query', () => {
                     ":pk": 'asdf',
                     ':sk': 'asdf',
                     ':name': 'abb',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct "size" query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('asdf')
+                .filter.size('name', Operation.GtEq, 12)
+                .filter.size('image', Operation.LtEq, 100)
+                ;
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "size(#name) >= :size_name and size(image) <= :size_image",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': 'asdf',
+                    ':size_name': 12,
+                    ':size_image': 100,
                 },
                 Limit: 25,
             });
