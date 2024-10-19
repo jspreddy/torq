@@ -13,6 +13,7 @@ SQL Like Query interface for better code readability.
 - Supports limit
 - Select specific columns
 - Handles reserved and special character names by using `ExpressionAttributeNames`
+- Supports index usage, with optional scan direction.
 
 > [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
 
@@ -120,7 +121,8 @@ Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Worki
 
 ## TODO
 
-TODO: Add dynamodb integration tests using jest-dynamodb. 
+
+TODO: Add dynamodb integration tests using jest-dynamodb.
 https://jestjs.io/docs/dynamodb
 
 
@@ -146,7 +148,3 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.
 
 TODO: Add support for easy ttl operations.
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
-
-
-TODO: Add index support.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html

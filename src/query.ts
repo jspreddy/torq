@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
+import assert from 'assert';
 
 /**
  * Type of attributes accepted by dynamo db.
@@ -53,6 +54,7 @@ export class Query {
     private _filters: Array<Condition>;
     // TODO: Implement index usage.
     private _index: string | undefined;
+    private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
 
     get state() {
@@ -64,6 +66,7 @@ export class Query {
             keys: this._keys,
             filters: this._filters,
             index: this._index,
+            scanForward: this._scanForward,
             limit: this._limit,
         };
     }
@@ -194,11 +197,16 @@ export class Query {
         return filterConditions;
     }
 
-    // TODO: Implement using an index.
-    // using(index: string): Query {
-    //     this._index = index;
-    //     return this;
-    // }
+    using(index: string, scanForward: boolean | undefined = undefined): Query {
+        assert(
+            typeof scanForward === 'boolean' || _.isNil(scanForward),
+            'Query.using(): scanForward must be a boolean or undefined',
+        );
+
+        this._index = index;
+        this._scanForward = scanForward;
+        return this;
+    }
 
     limit(l: number): Query {
         this._limit = l ?? Query.DEFAULT_LIMIT;
@@ -208,7 +216,7 @@ export class Query {
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
-        return {
+        return _.omitBy({
             TableName: this._tableName,
             ...formatProjectionExpression(this._selections),
             ...keyCond,
@@ -216,7 +224,9 @@ export class Query {
             ..._.merge(keyAttribNames, filterAttribNames),
             ..._.merge(keyAttribVals, filterAttribVals),
             Limit: this._limit,
-        };
+            IndexName: this._index,
+            ScanIndexForward: this._scanForward,
+        }, _.isNil);
     }
 }
 
@@ -308,7 +318,7 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
     });
 
     return [
-        { KeyConditionExpression: _.join(conditionParts, " and ") },
+        { KeyConditionExpression: _.isEmpty(conditionParts) ? undefined : _.join(conditionParts, " and ") },
         { ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals },
         { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
     ];
