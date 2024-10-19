@@ -249,10 +249,6 @@ const isReserved = (name: string): boolean => {
     return _.indexOf(reserved, _.toUpper(name)) != -1;
 }
 
-const xor = (a: boolean, b: boolean): boolean => {
-    return a !== b;
-}
-
 const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> => {
     return _.map(conditions, (cond) => {
 

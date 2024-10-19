@@ -740,7 +740,7 @@ describe('class: Query', () => {
             });
         });
 
-        it('should throw if count and select are used together  ', async () => {
+        it('should throw if count and select are used together', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             x.count().select(['asdf', 'pqrs']);
