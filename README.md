@@ -14,9 +14,10 @@ SQL Like Query interface for better code readability.
 - Select specific columns
 - Handles reserved and special character names by using `ExpressionAttributeNames`
 - Supports index usage, with optional scan direction.
+- Supports count.
+
 
 > [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
-
 
 
 -----------------------------
@@ -124,10 +125,6 @@ Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Worki
 
 TODO: Add dynamodb integration tests using jest-dynamodb.
 https://jestjs.io/docs/dynamodb
-
-
-TODO: Add suppport for COUNT.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Other.html#Query.Count
 
 
 TODO: Add support for pagination / lastEvaluatedKey.
