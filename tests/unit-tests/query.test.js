@@ -46,6 +46,7 @@ describe('class: Query', () => {
                     { key: 'isPolinated', val: true, type: 'eq' }
                 ],
                 index: undefined,
+                scanForward: undefined,
                 limit: 10
             });
 
@@ -661,6 +662,54 @@ describe('class: Query', () => {
                 },
                 Limit: 25,
             });
+        });
+    });
+
+    describe('Index', () => {
+        it('should return correct index query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.using('special-index-name');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                IndexName: 'special-index-name',
+                Limit: 25,
+            });
+        });
+
+        it('should scan index forward, when specified "true"', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.using('special-index-name', true);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                IndexName: 'special-index-name',
+                ScanIndexForward: true,
+                Limit: 25,
+            });
+        });
+
+        it('should scan index forward, when specified "false"', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.using('special-index-name', false);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                IndexName: 'special-index-name',
+                ScanIndexForward: false,
+                Limit: 25,
+            });
+        });
+
+        it('should throw if scanForward is not a boolean', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            expect(() => {
+                x.using('special-index-name', 1);
+            }).toThrow('Query.using(): scanForward must be a boolean or undefined');
         });
     });
 
