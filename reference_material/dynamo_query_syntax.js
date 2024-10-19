@@ -4,7 +4,9 @@ const client = new DynamoDBClient(config);
 const input = { // QueryInput
     TableName: "STRING_VALUE", // required
     IndexName: "STRING_VALUE",
+
     Select: "ALL_ATTRIBUTES" || "ALL_PROJECTED_ATTRIBUTES" || "SPECIFIC_ATTRIBUTES" || "COUNT",
+
     AttributesToGet: [ // AttributeNameList
         "STRING_VALUE",
     ],
@@ -69,11 +71,15 @@ const input = { // QueryInput
         },
     },
     ConditionalOperator: "AND" || "OR",
-    ScanIndexForward: true || false,
+
     ExclusiveStartKey: { // Key
         "<keys>": "<AttributeValue>",
     },
+
+    ScanIndexForward: true || false,
+
     ReturnConsumedCapacity: "INDEXES" || "TOTAL" || "NONE",
+
     ProjectionExpression: "STRING_VALUE",
     FilterExpression: "STRING_VALUE",
     KeyConditionExpression: "STRING_VALUE",

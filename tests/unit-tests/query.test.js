@@ -37,6 +37,7 @@ describe('class: Query', () => {
                 hashKey: 'pk',
                 rangeKey: 'sk',
                 selections: ['asdf', 'pqrs'],
+                count: false,
                 keys: [
                     { key: "pk", val: "aasdf", type: "hash-eq" },
                     { key: "sk", val: "1235:238h9084", type: "eq" },
@@ -713,4 +714,61 @@ describe('class: Query', () => {
         });
     });
 
+    describe('Counts', () => {
+        it('should return correct count query', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.count();
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Select: 'COUNT',
+                Limit: 25,
+            });
+        });
+
+        it('should return correct count query with index', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.count().using('special-index-name');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Select: 'COUNT',
+                IndexName: 'special-index-name',
+                Limit: 25,
+            });
+        });
+
+        it('should throw if count and select are used together', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.count().select(['asdf', 'pqrs']);
+
+            expect(() => {
+                x.toDynamo();
+            }).toThrow('Query.toDynamo(): Cannot use both count() and select()');
+        });
+
+        it('should return correct query for count, index, where, filters', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+
+            x.count().using('special-index-name')
+                .where.hash.eq('sai.jonnala')
+                .filter.eq('flower', 'rose');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Select: 'COUNT',
+                IndexName: 'special-index-name',
+                KeyConditionExpression: "pk = :pk",
+                FilterExpression: "flower = :flower",
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ":flower": 'rose',
+                },
+                Limit: 25,
+            });
+        });
+    });
 });
