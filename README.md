@@ -14,9 +14,15 @@ SQL Like Query interface for better code readability.
 - Select specific columns
 - Handles reserved and special character names by using `ExpressionAttributeNames`
 
-See unit tests for all the features that are supported.
-https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69
+> [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
 
+
+
+-----------------------------
+
+## Examples
+
+### Example 1: Basic query
 
 ```js
 const x = new Query('some-table-name', 'pk', 'sk');
@@ -51,7 +57,8 @@ This is what `x.toDynamo()` returns.
 ```
 
 
-# Another examples with reserved words
+### Example 2: Automatic handling of reserved attribute names.
+
 ```js
 const x = new Query('some-table-name', '_friend', '_best');
 
@@ -90,14 +97,13 @@ This is the resulting dynamo query.
 }
 ```
 
+> See the section on `"Reserved & Special Char Names"` in [unit tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L570) for more examples.
 
 
 
------------------------------
+### More Examples
 
-
-> See unit tests for all the features that are supported.
-> https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69
+> [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
 
 
 
