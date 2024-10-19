@@ -56,6 +56,7 @@ export class Query {
     private _index: string | undefined;
     private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
+    private _count: boolean = false;
 
     get state() {
         return {
@@ -68,6 +69,7 @@ export class Query {
             index: this._index,
             scanForward: this._scanForward,
             limit: this._limit,
+            count: this._count,
         };
     }
 
@@ -84,6 +86,11 @@ export class Query {
 
     select(cols: string[]) {
         this._selections = cols;
+        return this;
+    }
+
+    count() {
+        this._count = true;
         return this;
     }
 
@@ -216,9 +223,16 @@ export class Query {
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
+        const projection = formatProjectionExpression(this._selections);
+
+        const hasCount = this._count;
+        const hasSelect = !_.isNil(projection);
+        assert(!(hasCount && hasSelect), 'Query.toDynamo(): Cannot use both count() and select()');
+
         return _.omitBy({
             TableName: this._tableName,
-            ...formatProjectionExpression(this._selections),
+            Select: this._count ? 'COUNT' : undefined,
+            ...projection,
             ...keyCond,
             ...filterCond,
             ..._.merge(keyAttribNames, filterAttribNames),
@@ -233,6 +247,10 @@ export class Query {
 const isReserved = (name: string): boolean => {
     // Does the upper cased "name" exists in the reserved words list.
     return _.indexOf(reserved, _.toUpper(name)) != -1;
+}
+
+const xor = (a: boolean, b: boolean): boolean => {
+    return a !== b;
 }
 
 const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> => {
