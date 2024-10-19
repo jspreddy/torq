@@ -541,20 +541,26 @@ describe('class: Query', () => {
                 .where.range.eq('asdf')
                 .filter.size('name', Operation.GtEq, 12)
                 .filter.size('image', Operation.LtEq, 100)
+                .filter.size('function', Operation.Eq, 100)
+                .filter.size('url', Operation.NotEq, 10)
                 ;
 
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
                 KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "size(#name) >= :size_name and size(image) <= :size_image",
+                FilterExpression: "size(#name) >= :size_name and size(image) <= :size_image and size(#function) = :size_function and size(#url) <> :size_url",
                 ExpressionAttributeNames: {
                     "#name": "name",
+                    "#function": "function",
+                    "#url": "url",
                 },
                 ExpressionAttributeValues: {
                     ":pk": 'asdf',
                     ':sk': 'asdf',
                     ':size_name': 12,
                     ':size_image': 100,
+                    ':size_function': 100,
+                    ':size_url': 10,
                 },
                 Limit: 25,
             });

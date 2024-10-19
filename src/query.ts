@@ -23,6 +23,8 @@ type BetweenValues = {
     end: DynamoValue,
 };
 export enum Operation {
+    Eq = '=',
+    NotEq = '<>',
     Gt = '>',
     GtEq = '>=',
     Lt = '<',
