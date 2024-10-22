@@ -43,6 +43,35 @@ type Condition = {
     actualName?: string,
 };
 
+export class Index {
+    private _name: string;
+    private _hashKey: string;
+    private _rangeKey: string | undefined;
+
+    constructor(name: string, hashKey: string, rangeKey: string | undefined) {
+        assert(_.isString(name) && _.size(name) > 0, 'Index.constructor(): name must be provided');
+        assert(_.isString(hashKey) && _.size(hashKey) > 0, 'Index.constructor(): hashKey must be provided');
+
+        this._name = name;
+        this._hashKey = hashKey;
+        this._rangeKey = rangeKey;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    get hashKey() {
+        return this._hashKey;
+    }
+
+    get rangeKey() {
+        return this._rangeKey;
+    }
+}
+
+
+
 export class Query {
     static DEFAULT_LIMIT = 25;
 
@@ -53,7 +82,7 @@ export class Query {
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
     // TODO: Implement index usage.
-    private _index: string | undefined;
+    private _index: Index | undefined;
     private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
     private _count: boolean = false;
@@ -95,47 +124,59 @@ export class Query {
     }
 
     get where() {
+        const pushRangeKey = (val: Condition['val'], type: string) => {
+            if (_.isNil(this._index)) {
+                this._keys.push({ key: this._rangeKey, val: val, type: type });
+                return;
+            }
+            assert(
+                _.isString(this._index.rangeKey) && _.size(this._index.rangeKey) > 0,
+                'Query.where.range: Provided Index does not have a rangeKey',
+            );
+            this._keys.push({ key: this._index.rangeKey, val: val, type: type });
+        };
         const whereSelectors = {
             hash: {
                 eq: (val: string): Query => {
-                    this._keys.push({ key: this._hashKey, val: val, type: 'hash-eq' });
+                    if (_.isNil(this._index)) {
+                        this._keys.push({ key: this._hashKey, val: val, type: 'hash-eq' });
+                        return this;
+                    }
+                    assert(
+                        _.isString(this._index?.hashKey) && _.size(this._index.hashKey) > 0,
+                        'Query.where.hash: Provided Index does not have a hashKey',
+                    );
+                    this._keys.push({ key: this._index.hashKey, val: val, type: 'hash-eq' });
                     return this;
                 }
             },
             range: {
                 eq: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'eq' });
+                    pushRangeKey(val, 'eq');
                     return this;
                 },
                 beginsWith: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'begins_with' });
+                    pushRangeKey(val, 'begins_with');
                     return this;
                 },
                 gt: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'gt' });
+                    pushRangeKey(val, 'gt');
                     return this;
                 },
                 gtEq: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'gtEq' });
+                    pushRangeKey(val, 'gtEq');
                     return this;
                 },
                 lt: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'lt' });
+                    pushRangeKey(val, 'lt');
                     return this;
                 },
                 ltEq: (val: DynamoValue): Query => {
-                    this._keys.push({ key: this._rangeKey, val: val, type: 'ltEq' });
+                    pushRangeKey(val, 'ltEq');
                     return this;
                 },
                 between: (start: DynamoValue, end: DynamoValue): Query => {
-                    this._keys.push({
-                        key: this._rangeKey,
-                        val: {
-                            start,
-                            end,
-                        },
-                        type: 'between',
-                    });
+                    pushRangeKey({ start, end }, 'between');
                     return this;
                 },
             },
@@ -204,7 +245,7 @@ export class Query {
         return filterConditions;
     }
 
-    using(index: string, scanForward: boolean | undefined = undefined): Query {
+    using(index: Index, scanForward: boolean | undefined = undefined): Query {
         assert(
             typeof scanForward === 'boolean' || _.isNil(scanForward),
             'Query.using(): scanForward must be a boolean or undefined',
@@ -238,7 +279,7 @@ export class Query {
             ..._.merge(keyAttribNames, filterAttribNames),
             ..._.merge(keyAttribVals, filterAttribVals),
             Limit: this._limit,
-            IndexName: this._index,
+            IndexName: this._index?.name,
             ScanIndexForward: this._scanForward,
         }, _.isNil);
     }
