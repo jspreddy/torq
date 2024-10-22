@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Query, DdbType, Operation } from '../../src';
+import { Query, DdbType, Operation, Index } from '../../src';
 
 /**
  * Helper for joining multiple strings into one.
@@ -667,10 +667,36 @@ describe('class: Query', () => {
     });
 
     describe('Index', () => {
+        it('should throw if name is not provided', async () => {
+            expect(() => {
+                new Index('');
+            }).toThrow('Index.constructor(): name must be provided');
+        });
+
+        it('should throw if hashKey is not provided', async () => {
+            expect(() => {
+                new Index('special-index-name');
+            }).toThrow('Index.constructor(): hashKey must be provided');
+
+            expect(() => {
+                new Index('special-index-name', '');
+            }).toThrow('Index.constructor(): hashKey must be provided');
+        });
+
+        it('should create an index object, with relevant getters', async () => {
+            const idx = new Index('special-index-name', 'new-pk', 'new-sk');
+            expect(idx).toBeDefined();
+            expect(idx.name).toEqual('special-index-name');
+            expect(idx.hashKey).toEqual('new-pk');
+            expect(idx.rangeKey).toEqual('new-sk');
+        });
+    });
+
+    describe('Using an Index', () => {
         it('should return correct index query', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.using('special-index-name');
+            const specialIdx = new Index('special-index-name', 'new-pk', 'new-sk');
+            x.using(specialIdx);
 
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
@@ -681,8 +707,8 @@ describe('class: Query', () => {
 
         it('should scan index forward, when specified "true"', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.using('special-index-name', true);
+            const specialIndex = new Index('special-index-name', 'new-pk', 'new-sk');
+            x.using(specialIndex, true);
 
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
@@ -692,10 +718,10 @@ describe('class: Query', () => {
             });
         });
 
-        it('should scan index forward, when specified "false"', async () => {
+        it('should scan index backward, when specified "false"', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.using('special-index-name', false);
+            const specialIndex = new Index('special-index-name', 'new-pk', 'new-sk');
+            x.using(specialIndex, false);
 
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
@@ -705,11 +731,56 @@ describe('class: Query', () => {
             });
         });
 
+        it('should return correct query for using index with hash key', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+            const specialIdx = new Index('special-index-name', 'type');
+
+            x.using(specialIdx)
+                .where.hash.eq('pizza');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                IndexName: 'special-index-name',
+                KeyConditionExpression: "#type = :type",
+                ExpressionAttributeNames: {
+                    "#type": "type",
+                },
+                ExpressionAttributeValues: {
+                    ":type": 'pizza',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for using index with hash key and range key', async () => {
+            const x = new Query('some-table-name', 'pk', 'sk');
+            const specialIndex = new Index('special-index-name', 'type', 'size');
+
+            x.using(specialIndex)
+                .where.hash.eq('pizza')
+                .where.range.eq('9inch:');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                IndexName: 'special-index-name',
+                KeyConditionExpression: "#type = :type and #size = :size",
+                ExpressionAttributeNames: {
+                    "#type": "type",
+                    "#size": "size",
+                },
+                ExpressionAttributeValues: {
+                    ":type": 'pizza',
+                    ":size": '9inch:',
+                },
+                Limit: 25,
+            });
+        });
+
         it('should throw if scanForward is not a boolean', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
 
             expect(() => {
-                x.using('special-index-name', 1);
+                x.using(new Index('special-index-name', 'new-pk', 'new-sk'), 1);
             }).toThrow('Query.using(): scanForward must be a boolean or undefined');
         });
     });
@@ -729,8 +800,8 @@ describe('class: Query', () => {
 
         it('should return correct count query with index', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.count().using('special-index-name');
+            const specialIdx = new Index('special-index-name', 'new-pk');
+            x.count().using(specialIdx);
 
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
@@ -752,8 +823,8 @@ describe('class: Query', () => {
 
         it('should return correct query for count, index, where, filters', async () => {
             const x = new Query('some-table-name', 'pk', 'sk');
-
-            x.count().using('special-index-name')
+            const specialIdx = new Index('special-index-name', 'new-pk');
+            x.count().using(specialIdx)
                 .where.hash.eq('sai.jonnala')
                 .filter.eq('flower', 'rose');
 
@@ -761,10 +832,10 @@ describe('class: Query', () => {
                 TableName: 'some-table-name',
                 Select: 'COUNT',
                 IndexName: 'special-index-name',
-                KeyConditionExpression: "pk = :pk",
+                KeyConditionExpression: "new-pk = :new-pk",
                 FilterExpression: "flower = :flower",
                 ExpressionAttributeValues: {
-                    ":pk": 'sai.jonnala',
+                    ":new-pk": 'sai.jonnala',
                     ":flower": 'rose',
                 },
                 Limit: 25,
