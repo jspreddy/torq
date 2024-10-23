@@ -1,3 +1,2 @@
-export { Query, DdbType, Operation, Index } from './query';
-
-export const x = {};
+export { Query, DdbType, Operation } from './core/Query';
+export { Index, Table } from './core/Structure';

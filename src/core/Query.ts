@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 import assert from 'assert';
+import { Index, Table } from './Structure';
 
 /**
  * Type of attributes accepted by dynamo db.
@@ -43,41 +44,13 @@ type Condition = {
     actualName?: string,
 };
 
-export class Index {
-    private _name: string;
-    private _hashKey: string;
-    private _rangeKey: string | undefined;
-
-    constructor(name: string, hashKey: string, rangeKey: string | undefined) {
-        assert(_.isString(name) && _.size(name) > 0, 'Index.constructor(): name must be provided');
-        assert(_.isString(hashKey) && _.size(hashKey) > 0, 'Index.constructor(): hashKey must be provided');
-
-        this._name = name;
-        this._hashKey = hashKey;
-        this._rangeKey = rangeKey;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get hashKey() {
-        return this._hashKey;
-    }
-
-    get rangeKey() {
-        return this._rangeKey;
-    }
-}
-
-
-
 export class Query {
     static DEFAULT_LIMIT = 25;
 
     private _tableName: string;
     private _hashKey: string;
-    private _rangeKey: string;
+    private _rangeKey: string | undefined;
+
     private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
@@ -102,10 +75,10 @@ export class Query {
         };
     }
 
-    constructor(tableName: string, hashKey: string, rangeKey: string) {
-        this._tableName = tableName;
-        this._hashKey = hashKey;
-        this._rangeKey = rangeKey;
+    constructor(table: Table) {
+        this._tableName = table.name;
+        this._hashKey = table.hashKey;
+        this._rangeKey = table.rangeKey;
 
         // initialize here so that each query obj has its own filter list.
         this._filters = [];
@@ -126,6 +99,10 @@ export class Query {
     get where() {
         const pushRangeKey = (val: Condition['val'], type: string) => {
             if (_.isNil(this._index)) {
+                assert(
+                    _.isString(this._rangeKey) && _.size(this._rangeKey) > 0,
+                    'Query.where.range: Table does not have a rangeKey',
+                );
                 this._keys.push({ key: this._rangeKey, val: val, type: type });
                 return;
             }
