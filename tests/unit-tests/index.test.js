@@ -92,10 +92,12 @@ describe('class: Index', () => {
 });
 
 describe('class: Query', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+    const usersTable = new Table('users-table', 'pk', 'height');
 
     describe('Internal State Checks', () => {
         it('should initialize with values', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             expect(x.state).toMatchObject({
                 tableName: 'some-table-name',
                 hashKey: 'pk',
@@ -104,7 +106,7 @@ describe('class: Query', () => {
         });
 
         it('should have proper state after chaining methods', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select(['asdf', 'pqrs'])
                 .where.hash.eq('aasdf')
@@ -149,9 +151,9 @@ describe('class: Query', () => {
         });
     });
 
-    describe('Hash and Range equals', () => {
+    describe('Hash and Range keys eq operations', () => {
         it('should return proper dynamo query for hash and range', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('aasdf')
@@ -168,11 +170,19 @@ describe('class: Query', () => {
                 },
             });
         });
+
+        it('should throw if we use non-existant rangeKey', async () => {
+            const x = new Query(new Table('only-pk-table', 'pk'));
+            x.where.hash.eq('aasdf');
+            expect(() => {
+                x.where.range.eq('1235:238h9084');
+            }).toThrow('Query.where.range: Table does not have a rangeKey');
+        });
     });
 
-    describe('Range Operations', () => {
+    describe('RangeKey specific operations', () => {
         it('should return correct begins_with query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('aasdf')
@@ -190,7 +200,7 @@ describe('class: Query', () => {
         });
 
         it('should return query for ">" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('sai.jonnala')
@@ -208,7 +218,7 @@ describe('class: Query', () => {
         });
 
         it('should return query for ">=" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('sai.jonnala')
@@ -226,14 +236,14 @@ describe('class: Query', () => {
         });
 
         it('should return query for "<" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'height');
+            const x = new Query(usersTable);
 
             x.select()
                 .where.hash.eq('sai.jonnala')
                 .where.range.lt(6);
 
             expect(x.toDynamo()).toEqual({
-                TableName: 'some-table-name',
+                TableName: 'users-table',
                 KeyConditionExpression: "pk = :pk and height < :height",
                 ExpressionAttributeValues: {
                     ":pk": 'sai.jonnala',
@@ -244,14 +254,14 @@ describe('class: Query', () => {
         });
 
         it('should return query for "<=" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'height');
+            const x = new Query(usersTable);
 
             x.select()
                 .where.hash.eq('sai.jonnala')
                 .where.range.ltEq(5.11);
 
             expect(x.toDynamo()).toEqual({
-                TableName: 'some-table-name',
+                TableName: 'users-table',
                 KeyConditionExpression: "pk = :pk and height <= :height",
                 ExpressionAttributeValues: {
                     ":pk": 'sai.jonnala',
@@ -262,7 +272,8 @@ describe('class: Query', () => {
         });
 
         it('should return correct "between" query', async () => {
-            const x = new Query('git-history-table', 'pk', 'date');
+            const gitHistoryTable = new Table('git-history-table', 'pk', 'date');
+            const x = new Query(gitHistoryTable);
 
             x.select()
                 .where.hash.eq('commit')
@@ -286,7 +297,7 @@ describe('class: Query', () => {
 
     describe('Selects', () => {
         it('should return proper selections', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select(['pk', 'sk', 'asdf', 'qwer'])
                 .where.hash.eq('aasdf')
@@ -308,7 +319,7 @@ describe('class: Query', () => {
 
     describe('Filters', () => {
         it('should return key condition, filter expression and their combined attributes', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select(['asdf', 'pqrs'])
                 .where.hash.eq('aasdf')
@@ -333,7 +344,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for "=" (equals) operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -354,7 +365,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for "<>" (not equals) operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -375,7 +386,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for ">" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -396,7 +407,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for ">=" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -417,7 +428,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for "<" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -438,7 +449,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for "<=" operation', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -459,7 +470,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "begins_with" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -480,7 +491,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "attribute_exists" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -509,7 +520,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "attribute_not_exists" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -538,7 +549,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "attribute_type" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -592,7 +603,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "contains" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -617,7 +628,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct "size" query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.select()
                 .where.hash.eq('asdf')
@@ -652,7 +663,7 @@ describe('class: Query', () => {
 
     describe('Reserved & Special Char Names', () => {
         it('should convert dynamo reserved names to ExpressionAttributeNames', async () => {
-            const x = new Query('some-table-name', 'pk', 'BY');
+            const x = new Query(new Table('some-table-name', 'pk', 'BY'));
 
             x.select(['asdf', 'pqrs'])
                 .where.hash.eq('aasdf')
@@ -692,7 +703,7 @@ describe('class: Query', () => {
         });
 
         it('should convert "_names" to ExpressionAttributeNames', async () => {
-            const x = new Query('some-table-name', '_friend', '_best');
+            const x = new Query(new Table('some-table-name', '_friend', '_best'));
 
             x.select(['asdf', 'pqrs'])
                 .where.hash.eq('ramana')
@@ -725,7 +736,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct beginswith query for reserved attribute name', async () => {
-            const x = new Query('spies', 'name', 'AGENT');
+            const x = new Query(new Table('spies', 'name', 'AGENT'));
 
             x.select()
                 .where.hash.eq('sai.jonnala')
@@ -749,7 +760,7 @@ describe('class: Query', () => {
 
     describe('Using an Index', () => {
         it('should return correct index query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIdx = new Index('special-index-name', 'new-pk', 'new-sk');
             x.using(specialIdx);
 
@@ -761,7 +772,7 @@ describe('class: Query', () => {
         });
 
         it('should scan index forward, when specified "true"', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIndex = new Index('special-index-name', 'new-pk', 'new-sk');
             x.using(specialIndex, true);
 
@@ -774,7 +785,7 @@ describe('class: Query', () => {
         });
 
         it('should scan index backward, when specified "false"', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIndex = new Index('special-index-name', 'new-pk', 'new-sk');
             x.using(specialIndex, false);
 
@@ -787,7 +798,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for using index with hash key', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIdx = new Index('special-index-name', 'type');
 
             x.using(specialIdx)
@@ -808,7 +819,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for using index with hash key and range key', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIndex = new Index('special-index-name', 'type', 'size');
 
             x.using(specialIndex)
@@ -832,7 +843,7 @@ describe('class: Query', () => {
         });
 
         it('should throw if scanForward is not a boolean', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             expect(() => {
                 x.using(new Index('special-index-name', 'new-pk', 'new-sk'), 1);
@@ -842,7 +853,7 @@ describe('class: Query', () => {
 
     describe('Counts', () => {
         it('should return correct count query', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.count();
 
@@ -854,7 +865,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct count query with index', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIdx = new Index('special-index-name', 'new-pk');
             x.count().using(specialIdx);
 
@@ -867,7 +878,7 @@ describe('class: Query', () => {
         });
 
         it('should throw if count and select are used together', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
 
             x.count().select(['asdf', 'pqrs']);
 
@@ -877,7 +888,7 @@ describe('class: Query', () => {
         });
 
         it('should return correct query for count, index, where, filters', async () => {
-            const x = new Query('some-table-name', 'pk', 'sk');
+            const x = new Query(basicTable);
             const specialIdx = new Index('special-index-name', 'new-pk');
             x.count().using(specialIdx)
                 .where.hash.eq('sai.jonnala')
