@@ -7,14 +7,14 @@ SQL Like query builder for dynamodb.
 
 SQL Like Query interface for better code readability.
 
-- Keys: Hash Keys and Range Keys
-- Supports Filters
-- Supports range operations for range key and for filters.
-- Supports limit
-- Select specific columns
-- Handles reserved and special character names by using `ExpressionAttributeNames`
-- Supports index usage, with optional scan direction.
-- Supports count.
+- Supports **Hash Keys** and **Range Keys**
+- Supports **Filters**
+- Supports various operations for **Range Keys** and **Filters**
+- Supports **limit**ing results
+- Supports **select**ing specific columns
+- Automatically handles reserved and special character attribute names by using `ExpressionAttributeNames`
+- Supports querying on **Indexes**, with optional scan direction
+- Supports **count**
 
 
 > [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
@@ -27,7 +27,8 @@ SQL Like Query interface for better code readability.
 ### Example 1: Basic query
 
 ```js
-const x = new Query('some-table-name', 'pk', 'sk');
+const myTable = new Table('some-table-name', 'pk', 'sk');
+const x = new Query(myTable);
 
 x.select(['asdf', 'pqrs'])
     .where.hash.eq('aasdf')
@@ -62,7 +63,8 @@ This is what `x.toDynamo()` returns.
 ### Example 2: Automatic handling of reserved attribute names.
 
 ```js
-const x = new Query('some-table-name', '_friend', '_best');
+const table = new Table('some-table-name', '_friend', '_best');
+const x = new Query(table);
 
 // query builder
 x.select(['asdf', 'pqrs'])
