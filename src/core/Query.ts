@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { reserved } from './dynamo_reserved_words';
 import assert from 'assert';
+import { Index } from './Structure';
 
 /**
  * Type of attributes accepted by dynamo db.
@@ -43,41 +44,13 @@ type Condition = {
     actualName?: string,
 };
 
-export class Index {
-    private _name: string;
-    private _hashKey: string;
-    private _rangeKey: string | undefined;
-
-    constructor(name: string, hashKey: string, rangeKey: string | undefined) {
-        assert(_.isString(name) && _.size(name) > 0, 'Index.constructor(): name must be provided');
-        assert(_.isString(hashKey) && _.size(hashKey) > 0, 'Index.constructor(): hashKey must be provided');
-
-        this._name = name;
-        this._hashKey = hashKey;
-        this._rangeKey = rangeKey;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get hashKey() {
-        return this._hashKey;
-    }
-
-    get rangeKey() {
-        return this._rangeKey;
-    }
-}
-
-
-
 export class Query {
     static DEFAULT_LIMIT = 25;
 
     private _tableName: string;
     private _hashKey: string;
     private _rangeKey: string;
+
     private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;

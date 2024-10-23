@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Query, DdbType, Operation, Index } from '../../src';
+import { Query, DdbType, Operation, Index, Table } from '../../src';
 
 /**
  * Helper for joining multiple strings into one.
@@ -9,6 +9,87 @@ import { Query, DdbType, Operation, Index } from '../../src';
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const stringer = (stringArray) => _.join(stringArray, " ");
 
+describe('class: Table', () => {
+    it('should throw if name is not provided', async () => {
+        expect(() => {
+            new Table();
+        }).toThrow('Table.constructor(): name must be provided');
+
+        expect(() => {
+            new Table('');
+        }).toThrow('Table.constructor(): name must be provided');
+
+        expect(() => {
+            new Table(null);
+        }).toThrow('Table.constructor(): name must be provided');
+    });
+
+    it('should throw if hashKey is not provided', async () => {
+        expect(() => {
+            new Table('some-table-name');
+        }).toThrow('Table.constructor(): hashKey must be provided');
+
+        expect(() => {
+            new Table('some-table-name', '');
+        }).toThrow('Table.constructor(): hashKey must be provided');
+
+        expect(() => {
+            new Table('some-table-name', null);
+        }).toThrow('Table.constructor(): hashKey must be provided');
+    });
+
+    it('should throw if rangeKey is bad', async () => {
+        expect(() => {
+            new Table('some-table-name', 'pk', '');
+        }).toThrow('Table.constructor(): rangeKey is invalid');
+
+        expect(() => {
+            new Table('some-table-name', 'pk', 123);
+        }).toThrow('Table.constructor(): rangeKey is invalid');
+    });
+
+    it('should create a table object, with relevant getters', async () => {
+        const tbl = new Table('some-table-name', 'pk');
+        expect(tbl).toBeDefined();
+        expect(tbl.name).toEqual('some-table-name');
+        expect(tbl.hashKey).toEqual('pk');
+        expect(tbl.rangeKey).toEqual(undefined);
+    });
+
+    it('should create a table object, with hash and range keys', async () => {
+        const tbl = new Table('some-table-name', 'pk', 'sk');
+        expect(tbl).toBeDefined();
+        expect(tbl.name).toEqual('some-table-name');
+        expect(tbl.hashKey).toEqual('pk');
+        expect(tbl.rangeKey).toEqual('sk');
+    });
+});
+
+describe('class: Index', () => {
+    it('should throw if name is not provided', async () => {
+        expect(() => {
+            new Index('');
+        }).toThrow('Index.constructor(): name must be provided');
+    });
+
+    it('should throw if hashKey is not provided', async () => {
+        expect(() => {
+            new Index('special-index-name');
+        }).toThrow('Index.constructor(): hashKey must be provided');
+
+        expect(() => {
+            new Index('special-index-name', '');
+        }).toThrow('Index.constructor(): hashKey must be provided');
+    });
+
+    it('should create an index object, with relevant getters', async () => {
+        const idx = new Index('special-index-name', 'new-pk', 'new-sk');
+        expect(idx).toBeDefined();
+        expect(idx.name).toEqual('special-index-name');
+        expect(idx.hashKey).toEqual('new-pk');
+        expect(idx.rangeKey).toEqual('new-sk');
+    });
+});
 
 describe('class: Query', () => {
 
@@ -663,32 +744,6 @@ describe('class: Query', () => {
                 },
                 Limit: 25,
             });
-        });
-    });
-
-    describe('Index', () => {
-        it('should throw if name is not provided', async () => {
-            expect(() => {
-                new Index('');
-            }).toThrow('Index.constructor(): name must be provided');
-        });
-
-        it('should throw if hashKey is not provided', async () => {
-            expect(() => {
-                new Index('special-index-name');
-            }).toThrow('Index.constructor(): hashKey must be provided');
-
-            expect(() => {
-                new Index('special-index-name', '');
-            }).toThrow('Index.constructor(): hashKey must be provided');
-        });
-
-        it('should create an index object, with relevant getters', async () => {
-            const idx = new Index('special-index-name', 'new-pk', 'new-sk');
-            expect(idx).toBeDefined();
-            expect(idx.name).toEqual('special-index-name');
-            expect(idx.hashKey).toEqual('new-pk');
-            expect(idx.rangeKey).toEqual('new-sk');
         });
     });
 
