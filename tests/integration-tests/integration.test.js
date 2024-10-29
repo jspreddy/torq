@@ -355,5 +355,183 @@ describe('Integration Tests', () => {
             });
         });
 
+        describe('FILTER operations', () => {
+
+            it('should filter for stars, where name = "Sun"', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.eq('name', 'Sun');
+
+                const response = await ddbDoc.query(x.toDynamo());
+
+                expect(response).toMatchObject({
+                    Count: 1,
+                    ScannedCount: 7, // because filter iterates over all items with hash key = stars
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Sun',
+                            version: '2024-01-01',
+                        },
+                    ],
+                });
+            });
+
+            it('should filter for stars, where name begins with "S"', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.beginsWith('name', 'S');
+
+                const response = await ddbDoc.query(x.toDynamo());
+
+                expect(response).toMatchObject({
+                    Count: 2,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Sun',
+                            version: '2024-01-01',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Sirius',
+                            version: '2024-01-06',
+                        },
+                    ],
+                });
+            });
+
+            it('should filter for stars, where name contains "o"', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.contains('name', 'o');
+
+                const response = await ddbDoc.query(x.toDynamo());
+
+                expect(response).toMatchObject({
+                    Count: 2,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Polaris',
+                            version: '2024-01-05',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Procyon',
+                            version: '2024-02-01',
+                        },
+                    ],
+                });
+            });
+
+            it('should filter for stars, where name not equal to "Sun"', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.notEq('name', 'Sun');
+
+                const response = await ddbDoc.query(x.toDynamo());
+
+                expect(response).toMatchObject({
+                    Count: 6,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Vega Prime',
+                            version: '2024-01-02',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Alpha Centauri',
+                            version: '2024-01-03',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Betelgeuse',
+                            version: '2024-01-04',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Polaris',
+                            version: '2024-01-05',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Sirius',
+                            version: '2024-01-06',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Procyon',
+                            version: '2024-02-01',
+                        },
+                    ],
+                });
+            });
+
+            it.skip('TODO: should filter for stars, where name is >= A and < C', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.gtEq('name', 'A')
+                    .filter.lt('name', 'C');
+
+                const query = x.toDynamo();
+                console.log(query);
+                const response = await ddbDoc.query(query);
+
+                expect(response).toMatchObject({
+                    Count: 2,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Alpha Centauri',
+                            version: '2024-01-03',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Betelgeuse',
+                            version: '2024-01-04',
+                        },
+                    ],
+                });
+            });
+
+            it.skip('TODO: should filter for stars, where name is between A and C', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.between('name', 'A', 'C');
+
+                const query = x.toDynamo();
+                console.log(query);
+                const response = await ddbDoc.query(query);
+
+                expect(response).toMatchObject({
+                    Count: 2,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Alpha Centauri',
+                            version: '2024-01-03',
+                        },
+                        {
+                            id: 'stars',
+                            name: 'Betelgeuse',
+                            version: '2024-01-04',
+                        },
+                    ],
+                });
+            });
+        });
     });
 });
