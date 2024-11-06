@@ -20,7 +20,7 @@ describe('Integration Tests', () => {
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-01', name: 'Sun' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-02', name: 'Vega Prime' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-03', name: 'Alpha Centauri' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-04', name: 'Betelgeuse' } });
+        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-04', name: 'Betelgeuse', hearts: 20 } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-05', name: 'Polaris' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-06', name: 'Sirius' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-02-01', name: 'Procyon' } });
@@ -505,14 +505,13 @@ describe('Integration Tests', () => {
                 });
             });
 
-            it.skip('TODO: should filter for stars, where name is between A and C', async () => {
+            it('should filter for stars, where name is between A and C', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
                 x.where.hash.eq('stars')
                     .filter.between('name', 'A', 'C');
 
                 const query = x.toDynamo();
-                console.log(query);
                 const response = await ddbDoc.query(query);
 
                 expect(response).toMatchObject({
@@ -528,6 +527,30 @@ describe('Integration Tests', () => {
                             id: 'stars',
                             name: 'Betelgeuse',
                             version: '2024-01-04',
+                        },
+                    ],
+                });
+            });
+
+            it('should filter for stars, where name is between A and C and version > 2024-01-03', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.where.hash.eq('stars')
+                    .filter.between('name', 'A', 'C')
+                    .filter.gt('hearts', 10);
+
+                const query = x.toDynamo();
+                const response = await ddbDoc.query(query);
+
+                expect(response).toMatchObject({
+                    Count: 1,
+                    ScannedCount: 7,
+                    Items: [
+                        {
+                            id: 'stars',
+                            name: 'Betelgeuse',
+                            version: '2024-01-04',
+                            hearts: 20,
                         },
                     ],
                 });

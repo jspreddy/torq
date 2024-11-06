@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/midas",
-  "version": "0.1.13-0",
+  "version": "0.1.14-0",
   "description": "my dynamo library",
   "source": "src/index.ts",
   "main": "dist/main.js",
@@ -11,9 +11,11 @@
   },
   "scripts": {
     "test": "jest /tests/unit-tests/",
+    "test:watch": "npm run test:unit:watch",
     "test:int": "jest /tests/integration-tests/",
+    "test:int:watch": "jest --watch /tests/integration-tests/",
     "test:unit": "jest /tests/unit-tests/",
-    "test:watch": "jest --watch /tests/unit-tests/",
+    "test:unit:watch": "jest --watch /tests/unit-tests/",
     "test:all": "jest",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",

@@ -659,6 +659,28 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct "between" query', async () => {
+            const x = new Query(basicTable);
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('1234')
+                .filter.between('column_name', 'A', 'C');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "column_name BETWEEN :column_name_start AND :column_name_end",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': '1234',
+                    ':column_name_start': 'A',
+                    ':column_name_end': 'C',
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved & Special Char Names', () => {
