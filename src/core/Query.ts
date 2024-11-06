@@ -218,6 +218,10 @@ export class Query {
                 });
                 return this;
             },
+            between: (key: string, start: DynamoValue, end: DynamoValue): Query => {
+                this._filters.push({ key, val: { start, end }, type: 'between' });
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -427,6 +431,16 @@ const formatFilterCondition = (filters: Array<Condition>) => {
                 const newValRef = `:size_${_.trim(valRef, ':')}`;
                 _.set(attribVals, newValRef, sizeVal.val);
                 filterParts.push(`size(${f.key}) ${sizeVal.op} ${newValRef}`);
+                break;
+            }
+
+            case 'between': {
+                const valRefStart = `${valRef}_start`;
+                const valRefEnd = `${valRef}_end`;
+                const between = f.val as BetweenValues;
+                filterParts.push(`${f.key} BETWEEN ${valRefStart} AND ${valRefEnd}`);
+                _.set(attribVals, valRefStart, between.start);
+                _.set(attribVals, valRefEnd, between.end);
                 break;
             }
         }
