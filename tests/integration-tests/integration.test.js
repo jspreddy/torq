@@ -1,5 +1,4 @@
 import { ddbDoc } from './ddb-setup';
-import { exec } from 'node:child_process';
 
 // Local Imports
 import {
@@ -24,16 +23,6 @@ describe('Integration Tests', () => {
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-05', name: 'Polaris' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-06', name: 'Sirius' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-02-01', name: 'Procyon' } });
-    });
-
-    afterAll(() => {
-        try {
-            // here for when there is a orphan java dynamodb local process hanging around.
-            exec("kill -9 $(pgrep -f DynamoDBLocal)");
-        } catch (e) {
-            console.log('Failed to kill orphan java dynamodb-local process');
-            console.log(e);
-        }
     });
 
     describe('Connectivity Checks', () => {
