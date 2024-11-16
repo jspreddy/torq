@@ -50,7 +50,7 @@ const config = tseslint.config(
     },
 
     {
-        files: ['src/**/*.js'],
+        files: ['src/**/*.js', 'tests/**/*.js'],
         ...tseslint.configs.disableTypeChecked, // disable type-aware linting on JS files
     },
 
