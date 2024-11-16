@@ -21,10 +21,127 @@ describe('Users Table Integration Tests', () => {
         await addUserRecord({ pk: 'suresh@example.com', sk: 'user', firstName: 'suresh', lastName: 'kumar', age: 25, phone: '123-456-7890', address: '456 Elm St', favStar: 'Sirius', favColor: 'red', favCar: 'Ford' });
         await addUserRecord({ pk: 'suresh@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' });
         await addUserRecord({ pk: 'suresh@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:admin', name: 'admin', privilege: 'admin-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:finance', name: 'finance', privilege: 'finance-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:hr', name: 'hr', privilege: 'hr-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:it', name: 'it', privilege: 'it-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:marketing', name: 'marketing', privilege: 'marketing-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:sales', name: 'sales', privilege: 'sales-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:support', name: 'support', privilege: 'support-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:operations', name: 'operations', privilege: 'operations-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:development', name: 'development', privilege: 'development-access' });
+        await addUserRecord({ pk: 'suresh@example.com', sk: 'role:qa', name: 'qa', privilege: 'qa-access' });
 
         await addUserRecord({ pk: 'mahesh@example.com', sk: 'user', firstName: 'mahesh', lastName: 'babu', age: 40, phone: '123-456-7890', address: '789 Oak St', favStar: 'Betelgeuse', favColor: 'green', favCar: 'Toyota' });
         await addUserRecord({ pk: 'mahesh@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' });
         await addUserRecord({ pk: 'mahesh@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address', street: '789 Oak St', city: 'San Francisco', state: 'CA', zip: '94105', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address:2', street: '456 Maple Ave', city: 'Los Angeles', state: 'CA', zip: '90001', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address:3', street: '789 Broadway', city: 'New York', state: 'NY', zip: '10013', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address:4', street: '321 Lake St', city: 'Chicago', state: 'IL', zip: '60601', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address:5', street: '654 Hill Rd', city: 'Seattle', state: 'WA', zip: '98101', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'address:6', street: '987 Beach Blvd', city: 'Miami', state: 'FL', zip: '33139', country: 'USA' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'order:2024-01:a7b9c2', o_id: 'a7b9c2', orderDate: '2024-01-15T10:30:00.000Z', items: ['Laptop', 'Mouse', 'Keyboard'], subtotal: 1299.97, discount: 129.99, tax: 93.60, total: 1263.58, status: 'delivered' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'order:2024-02:f3e8d1', o_id: 'f3e8d1', orderDate: '2024-02-03T15:45:00.000Z', items: ['Monitor', 'Webcam'], subtotal: 599.98, discount: 0, tax: 48.00, total: 647.98, status: 'delivered' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'order:2024-03:k5m7n9', o_id: 'k5m7n9', orderDate: '2024-03-21T09:15:00.000Z', items: ['Printer', 'Paper', 'Ink Cartridges'], subtotal: 449.97, discount: 45.00, tax: 32.40, total: 437.37, status: 'processing' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'order:2024-04:p2q4r6', o_id: 'p2q4r6', orderDate: '2024-04-05T14:20:00.000Z', items: ['External Hard Drive', 'USB Hub'], subtotal: 199.98, discount: 20.00, tax: 14.40, total: 194.38, status: 'shipped' });
+        await addUserRecord({ pk: 'mahesh@example.com', sk: 'order:2024-05:x8y1z3', o_id: 'x8y1z3', orderDate: '2024-05-01T11:00:00.000Z', items: ['Wireless Headphones', 'Phone Stand'], subtotal: 249.98, discount: 25.00, tax: 18.00, total: 242.98, status: 'pending' });
+        await addUserRecord({
+            pk: 'mahesh@example.com',
+            sk: 'wishlist:tech',
+            name: 'Tech Gadgets',
+            created_at: '2024-03-15T08:00:00.000Z',
+            items: [
+                {
+                    id: 'tech-001',
+                    name: 'MacBook Pro 16"',
+                    price: 2499.99,
+                    quantity: 1,
+                    specs: {
+                        processor: 'M3 Pro',
+                        ram: '32GB',
+                        storage: '1TB'
+                    }
+                },
+                {
+                    id: 'tech-002',
+                    name: 'Sony WH-1000XM5',
+                    price: 399.99,
+                    quantity: 1,
+                    specs: {
+                        type: 'Wireless Headphones',
+                        color: 'Black',
+                        batteryLife: '30 hours'
+                    }
+                },
+                {
+                    id: 'tech-003',
+                    name: 'iPad Pro 12.9"',
+                    price: 1099.99,
+                    quantity: 1,
+                    specs: {
+                        storage: '256GB',
+                        connectivity: 'WiFi + Cellular',
+                        color: 'Space Gray'
+                    }
+                }
+            ],
+            total: 3999.97
+        });
+
+        await addUserRecord({
+            pk: 'mahesh@example.com',
+            sk: 'wishlist:home',
+            name: 'Home Improvement',
+            created_at: '2024-04-01T10:30:00.000Z',
+            items: [
+                {
+                    id: 'home-001',
+                    name: 'Smart Refrigerator',
+                    price: 2799.99,
+                    quantity: 1,
+                    specs: {
+                        brand: 'Samsung',
+                        model: 'Family Hub',
+                        color: 'Stainless Steel'
+                    }
+                },
+                {
+                    id: 'home-002',
+                    name: 'Robot Vacuum',
+                    price: 599.99,
+                    quantity: 1,
+                    specs: {
+                        brand: 'Roomba',
+                        model: 'j9+',
+                        features: ['Self-emptying', 'Smart mapping']
+                    }
+                },
+                {
+                    id: 'home-003',
+                    name: 'Smart Thermostat',
+                    price: 249.99,
+                    quantity: 2,
+                    specs: {
+                        brand: 'Nest',
+                        generation: '4th',
+                        color: 'Snow'
+                    }
+                },
+                {
+                    id: 'home-004',
+                    name: 'Air Purifier',
+                    price: 399.99,
+                    quantity: 1,
+                    specs: {
+                        brand: 'Dyson',
+                        coverage: '800 sq ft',
+                        filters: ['HEPA', 'Carbon']
+                    }
+                }
+            ],
+            total: 4249.95
+        });
 
         await addUserRecord({ pk: 'ramesh@example.com', sk: 'user', firstName: 'ramesh', lastName: 'yadav', age: 35, phone: '123-456-7890', address: '101 Pine St', favStar: 'Alpha Centauri', favColor: 'yellow', favCar: 'Honda' });
         await addUserRecord({ pk: 'ramesh@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' });
