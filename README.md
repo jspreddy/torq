@@ -15,12 +15,13 @@ SQL Like Query interface for better code readability.
 - Automatically handles reserved and special character attribute names by using `ExpressionAttributeNames`
 - Supports querying on **Indexes**, with optional scan direction
 - Supports **count**
+- Well Tested: Unit tests + Integration Tests (using `jest-dynamodb`).
 
+> See tests for all the features that are supported, and examples on how to use them.
+> - [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
+> - [Integration tests: Files Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/00-files-table.test.js#L45)
+> - [Integration tests: Users Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/01-users-table.test.js#L33)
 
-> [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
-
-
------------------------------
 
 ## Examples
 
@@ -107,7 +108,10 @@ This is the resulting dynamo query.
 
 ### More Examples
 
-> [See unit tests file for all the features that are supported.](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L69)
+See tests for all the features that are supported, and examples on how to use them.
+- [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
+- [Integration tests: Files Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/00-files-table.test.js#L45)
+- [Integration tests: Users Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/01-users-table.test.js#L33)
 
 
 
@@ -123,10 +127,6 @@ Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Worki
 
 
 ## TODO
-
-
-TODO: Add dynamodb integration tests using jest-dynamodb.
-https://jestjs.io/docs/dynamodb
 
 
 TODO: Add support for pagination / lastEvaluatedKey.
