@@ -366,9 +366,19 @@ const formatFilterCondition = (filters: Array<Condition>) => {
     const filterParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
+    const usedValRefs = new Set<string>();
 
-    _.each(updatedFilters, f => {
-        const valRef = `:${_.trim(f.key, '#')}`;
+    _.each(updatedFilters, (f, i) => {
+        let valRef = `:${_.trim(f.key, '#')}`;
+        // Add numeric suffix if valRef is already used
+        if (usedValRefs.has(valRef)) {
+            let counter = 1;
+            while (usedValRefs.has(`${valRef}_${counter}`)) {
+                counter++;
+            }
+            valRef = `${valRef}_${counter}`;
+        }
+        usedValRefs.add(valRef);
 
         switch (f.type) {
             case 'eq':

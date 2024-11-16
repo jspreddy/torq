@@ -465,7 +465,7 @@ describe('Integration Tests', () => {
                 });
             });
 
-            it.skip('TODO: should filter for stars, where name is >= A and < C', async () => {
+            it('should filter for stars, where name is >= A and < C', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
                 x.where.hash.eq('stars')
