@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses greater than 2, less than 5 1`] = `
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses between 2 and 5 1`] = `
 [
   {
     "city": "Los Angeles",
@@ -333,6 +333,20 @@ exports[`Users Table Integration Tests Query mahesh@example.com should fetch wis
     "pk": "mahesh@example.com",
     "sk": "wishlist:tech",
     "total": 3999.97,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should work with multiple filters on same attribute 1`] = `
+[
+  {
+    "city": "Los Angeles",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:2",
+    "state": "CA",
+    "street": "456 Maple Ave",
+    "zip": "90001",
   },
 ]
 `;

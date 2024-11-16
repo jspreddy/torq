@@ -228,82 +228,84 @@ describe('Users Table Integration Tests', () => {
         });
 
         describe('mahesh@example.com', () => {
-            it('should count all records for this user', async () => {
-                const x = new Query(usersTable);
-                x.count().where.hash.eq('mahesh@example.com');
-                const result = await ddbDoc.query(x.toDynamo());
-                expect(result.Count).toBe(16);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 16,
-                        ScannedCount: 16,
-                    }
-                );
-            });
+            describe("COUNT", () => {
+                it('should count all records for this user', async () => {
+                    const x = new Query(usersTable);
+                    x.count().where.hash.eq('mahesh@example.com');
+                    const result = await ddbDoc.query(x.toDynamo());
+                    expect(result.Count).toBe(16);
+                    expect(result).toEqual(
+                        {
+                            ...queryMetadata,
+                            Count: 16,
+                            ScannedCount: 16,
+                        }
+                    );
+                });
 
-            it('should count user objects for this user', async () => {
-                const x = new Query(usersTable);
-                x.count()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.eq('user');
-                const result = await ddbDoc.query(x.toDynamo());
-                expect(result.Count).toBe(1);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 1,
-                        ScannedCount: 1,
-                    }
-                );
-            });
+                it('should count user objects for this user', async () => {
+                    const x = new Query(usersTable);
+                    x.count()
+                        .where.hash.eq('mahesh@example.com')
+                        .where.range.eq('user');
+                    const result = await ddbDoc.query(x.toDynamo());
+                    expect(result.Count).toBe(1);
+                    expect(result).toEqual(
+                        {
+                            ...queryMetadata,
+                            Count: 1,
+                            ScannedCount: 1,
+                        }
+                    );
+                });
 
-            it('should count addresses for this user', async () => {
-                const x = new Query(usersTable);
-                x.count()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.beginsWith('address:');
-                const result = await ddbDoc.query(x.toDynamo());
-                expect(result.Count).toBe(6);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 6,
-                        ScannedCount: 6,
-                    }
-                );
-            });
+                it('should count addresses for this user', async () => {
+                    const x = new Query(usersTable);
+                    x.count()
+                        .where.hash.eq('mahesh@example.com')
+                        .where.range.beginsWith('address:');
+                    const result = await ddbDoc.query(x.toDynamo());
+                    expect(result.Count).toBe(6);
+                    expect(result).toEqual(
+                        {
+                            ...queryMetadata,
+                            Count: 6,
+                            ScannedCount: 6,
+                        }
+                    );
+                });
 
-            it('should count orders for this user', async () => {
-                const x = new Query(usersTable);
-                x.count()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.beginsWith('order:');
-                const result = await ddbDoc.query(x.toDynamo());
-                expect(result.Count).toBe(5);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 5,
-                        ScannedCount: 5,
-                    }
-                );
-            });
+                it('should count orders for this user', async () => {
+                    const x = new Query(usersTable);
+                    x.count()
+                        .where.hash.eq('mahesh@example.com')
+                        .where.range.beginsWith('order:');
+                    const result = await ddbDoc.query(x.toDynamo());
+                    expect(result.Count).toBe(5);
+                    expect(result).toEqual(
+                        {
+                            ...queryMetadata,
+                            Count: 5,
+                            ScannedCount: 5,
+                        }
+                    );
+                });
 
-            it('should count wishlist for this user', async () => {
-                const x = new Query(usersTable);
-                x.count()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.beginsWith('wishlist:');
-                const result = await ddbDoc.query(x.toDynamo());
-                expect(result.Count).toBe(2);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 2,
-                        ScannedCount: 2,
-                    }
-                );
+                it('should count wishlist for this user', async () => {
+                    const x = new Query(usersTable);
+                    x.count()
+                        .where.hash.eq('mahesh@example.com')
+                        .where.range.beginsWith('wishlist:');
+                    const result = await ddbDoc.query(x.toDynamo());
+                    expect(result.Count).toBe(2);
+                    expect(result).toEqual(
+                        {
+                            ...queryMetadata,
+                            Count: 2,
+                            ScannedCount: 2,
+                        }
+                    );
+                });
             });
 
             it('should fetch all wishlist items for this user', async () => {
@@ -316,7 +318,7 @@ describe('Users Table Integration Tests', () => {
                 expect(result.Items).toMatchSnapshot();
             });
 
-            it('should fetch addresses greater than 2, less than 5', async () => {
+            it('should fetch addresses between 2 and 5', async () => {
                 const x = new Query(usersTable);
                 x.select()
                     .where.hash.eq('mahesh@example.com')
@@ -377,6 +379,18 @@ describe('Users Table Integration Tests', () => {
                     .where.hash.eq('mahesh@example.com')
                     .where.range.beginsWith('wishlist:')
                     .filter.size('items', '=', 3);
+                const result = await ddbDoc.query(x.toDynamo());
+                expect(result.Items.length).toBe(1);
+                expect(result.Items).toMatchSnapshot();
+            });
+
+            it('should work with multiple filters on same attribute', async () => {
+                const x = new Query(usersTable);
+                x.select()
+                    .where.hash.eq('mahesh@example.com')
+                    .where.range.beginsWith('address:')
+                    .filter.beginsWith('zip', '9')
+                    .filter.beginsWith('zip', '90');
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(1);
                 expect(result.Items).toMatchSnapshot();
