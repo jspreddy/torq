@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/midas",
-  "version": "0.1.16-0",
+  "version": "0.1.17-0",
   "description": "my dynamo library",
   "source": "src/index.ts",
   "main": "dist/main.js",
@@ -10,10 +10,10 @@
     "node": ">= 16"
   },
   "scripts": {
-    "test:all": "npm run ddb-local:cleanup && jest",
-    "test:watch": "npm run ddb-local:cleanup && jest --watch",
     "ddb-local:cleanup": "npx kill-port 8000",
-    "test": "jest /tests/unit-tests/",
+    "test": "jest /tests/",
+    "test:all": "npm run ddb-local:cleanup && jest /tests/",
+    "test:watch": "npm run ddb-local:cleanup && jest --watch /tests/",
     "test:int": "npm run ddb-local:cleanup && jest /tests/integration-tests/",
     "test:int:watch": "npm run ddb-local:cleanup && jest --watch /tests/integration-tests/",
     "test:unit": "jest /tests/unit-tests/",
@@ -41,6 +41,7 @@
     "@types/lodash": "^4.17.7",
     "@types/node": "^22.7.7",
     "babel-jest": "^29.7.0",
+    "bluebird": "^3.7.2",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
     "kill-port": "^2.0.1",

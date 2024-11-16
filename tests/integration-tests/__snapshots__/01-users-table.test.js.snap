@@ -1,0 +1,472 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses greater than 2, less than 5 1`] = `
+[
+  {
+    "city": "Los Angeles",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:2",
+    "state": "CA",
+    "street": "456 Maple Ave",
+    "zip": "90001",
+  },
+  {
+    "city": "New York",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:3",
+    "state": "NY",
+    "street": "789 Broadway",
+    "zip": "10013",
+  },
+  {
+    "city": "Chicago",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:4",
+    "state": "IL",
+    "street": "321 Lake St",
+    "zip": "60601",
+  },
+  {
+    "city": "Seattle",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:5",
+    "state": "WA",
+    "street": "654 Hill Rd",
+    "zip": "98101",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses in CA 1`] = `
+[
+  {
+    "city": "San Francisco",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:1",
+    "state": "CA",
+    "street": "789 Oak St",
+    "zip": "94105",
+  },
+  {
+    "city": "Los Angeles",
+    "country": "USA",
+    "pk": "mahesh@example.com",
+    "sk": "address:2",
+    "state": "CA",
+    "street": "456 Maple Ave",
+    "zip": "90001",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch all wishlist items for this user 1`] = `
+[
+  {
+    "created_at": "2024-04-01T10:30:00.000Z",
+    "items": [
+      {
+        "id": "home-001",
+        "name": "Smart Refrigerator",
+        "price": 2799.99,
+        "quantity": 1,
+        "specs": {
+          "brand": "Samsung",
+          "color": "Stainless Steel",
+          "model": "Family Hub",
+        },
+      },
+      {
+        "id": "home-002",
+        "name": "Robot Vacuum",
+        "price": 599.99,
+        "quantity": 1,
+        "specs": {
+          "brand": "Roomba",
+          "features": [
+            "Self-emptying",
+            "Smart mapping",
+          ],
+          "model": "j9+",
+        },
+      },
+      {
+        "id": "home-003",
+        "name": "Smart Thermostat",
+        "price": 249.99,
+        "quantity": 2,
+        "specs": {
+          "brand": "Nest",
+          "color": "Snow",
+          "generation": "4th",
+        },
+      },
+      {
+        "id": "home-004",
+        "name": "Air Purifier",
+        "price": 399.99,
+        "quantity": 1,
+        "specs": {
+          "brand": "Dyson",
+          "coverage": "800 sq ft",
+          "filters": [
+            "HEPA",
+            "Carbon",
+          ],
+        },
+      },
+    ],
+    "name": "Home Improvement",
+    "pk": "mahesh@example.com",
+    "sk": "wishlist:home",
+    "total": 4249.95,
+  },
+  {
+    "created_at": "2024-03-15T08:00:00.000Z",
+    "items": [
+      {
+        "id": "tech-001",
+        "name": "MacBook Pro 16"",
+        "price": 2499.99,
+        "quantity": 1,
+        "specs": {
+          "processor": "M3 Pro",
+          "ram": "32GB",
+          "storage": "1TB",
+        },
+      },
+      {
+        "id": "tech-002",
+        "name": "Sony WH-1000XM5",
+        "price": 399.99,
+        "quantity": 1,
+        "specs": {
+          "batteryLife": "30 hours",
+          "color": "Black",
+          "type": "Wireless Headphones",
+        },
+      },
+      {
+        "id": "tech-003",
+        "name": "iPad Pro 12.9"",
+        "price": 1099.99,
+        "quantity": 1,
+        "specs": {
+          "color": "Space Gray",
+          "connectivity": "WiFi + Cellular",
+          "storage": "256GB",
+        },
+      },
+    ],
+    "name": "Tech Gadgets",
+    "pk": "mahesh@example.com",
+    "sk": "wishlist:tech",
+    "total": 3999.97,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch orders greater than 2024-02 and less than 2024-04 1`] = `
+[
+  {
+    "discount": 0,
+    "items": [
+      "Monitor",
+      "Webcam",
+    ],
+    "o_id": "f3e8d1",
+    "orderDate": "2024-02-03T15:45:00.000Z",
+    "pk": "mahesh@example.com",
+    "sk": "order:2024-02:f3e8d1",
+    "status": "delivered",
+    "subtotal": 599.98,
+    "tax": 48,
+    "total": 647.98,
+  },
+  {
+    "discount": 45,
+    "items": [
+      "Printer",
+      "Paper",
+      "Ink Cartridges",
+    ],
+    "o_id": "k5m7n9",
+    "orderDate": "2024-03-21T09:15:00.000Z",
+    "pk": "mahesh@example.com",
+    "sk": "order:2024-03:k5m7n9",
+    "status": "processing",
+    "subtotal": 449.97,
+    "tax": 32.4,
+    "total": 437.37,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch orders where size of items is 3 1`] = `
+[
+  {
+    "discount": 129.99,
+    "items": [
+      "Laptop",
+      "Mouse",
+      "Keyboard",
+    ],
+    "o_id": "a7b9c2",
+    "orderDate": "2024-01-15T10:30:00.000Z",
+    "pk": "mahesh@example.com",
+    "sk": "order:2024-01:a7b9c2",
+    "status": "delivered",
+    "subtotal": 1299.97,
+    "tax": 93.6,
+    "total": 1263.58,
+  },
+  {
+    "discount": 45,
+    "items": [
+      "Printer",
+      "Paper",
+      "Ink Cartridges",
+    ],
+    "o_id": "k5m7n9",
+    "orderDate": "2024-03-21T09:15:00.000Z",
+    "pk": "mahesh@example.com",
+    "sk": "order:2024-03:k5m7n9",
+    "status": "processing",
+    "subtotal": 449.97,
+    "tax": 32.4,
+    "total": 437.37,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch wishlist where size of items is 3 1`] = `
+[
+  {
+    "created_at": "2024-03-15T08:00:00.000Z",
+    "items": [
+      {
+        "id": "tech-001",
+        "name": "MacBook Pro 16"",
+        "price": 2499.99,
+        "quantity": 1,
+        "specs": {
+          "processor": "M3 Pro",
+          "ram": "32GB",
+          "storage": "1TB",
+        },
+      },
+      {
+        "id": "tech-002",
+        "name": "Sony WH-1000XM5",
+        "price": 399.99,
+        "quantity": 1,
+        "specs": {
+          "batteryLife": "30 hours",
+          "color": "Black",
+          "type": "Wireless Headphones",
+        },
+      },
+      {
+        "id": "tech-003",
+        "name": "iPad Pro 12.9"",
+        "price": 1099.99,
+        "quantity": 1,
+        "specs": {
+          "color": "Space Gray",
+          "connectivity": "WiFi + Cellular",
+          "storage": "256GB",
+        },
+      },
+    ],
+    "name": "Tech Gadgets",
+    "pk": "mahesh@example.com",
+    "sk": "wishlist:tech",
+    "total": 3999.97,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query mahesh@example.com should fetch wishlist where total less than 4000 1`] = `
+[
+  {
+    "created_at": "2024-03-15T08:00:00.000Z",
+    "items": [
+      {
+        "id": "tech-001",
+        "name": "MacBook Pro 16"",
+        "price": 2499.99,
+        "quantity": 1,
+        "specs": {
+          "processor": "M3 Pro",
+          "ram": "32GB",
+          "storage": "1TB",
+        },
+      },
+      {
+        "id": "tech-002",
+        "name": "Sony WH-1000XM5",
+        "price": 399.99,
+        "quantity": 1,
+        "specs": {
+          "batteryLife": "30 hours",
+          "color": "Black",
+          "type": "Wireless Headphones",
+        },
+      },
+      {
+        "id": "tech-003",
+        "name": "iPad Pro 12.9"",
+        "price": 1099.99,
+        "quantity": 1,
+        "specs": {
+          "color": "Space Gray",
+          "connectivity": "WiFi + Cellular",
+          "storage": "256GB",
+        },
+      },
+    ],
+    "name": "Tech Gadgets",
+    "pk": "mahesh@example.com",
+    "sk": "wishlist:tech",
+    "total": 3999.97,
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query suresh@example.com should fetch all roles for this user 1`] = `
+[
+  {
+    "name": "admin",
+    "pk": "suresh@example.com",
+    "privilege": "admin-access",
+    "sk": "role:admin",
+  },
+  {
+    "name": "basic",
+    "pk": "suresh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "deleted_at": "2024-01-20T00:00:00.000Z",
+    "name": "development",
+    "pk": "suresh@example.com",
+    "privilege": "development-access",
+    "sk": "role:development",
+  },
+  {
+    "name": "finance",
+    "pk": "suresh@example.com",
+    "privilege": "finance-access",
+    "sk": "role:finance",
+  },
+  {
+    "name": "hr",
+    "pk": "suresh@example.com",
+    "privilege": "hr-access",
+    "sk": "role:hr",
+  },
+  {
+    "name": "it",
+    "pk": "suresh@example.com",
+    "privilege": "it-access",
+    "sk": "role:it",
+  },
+  {
+    "name": "marketing",
+    "pk": "suresh@example.com",
+    "privilege": "marketing-access",
+    "sk": "role:marketing",
+  },
+  {
+    "name": "operations",
+    "pk": "suresh@example.com",
+    "privilege": "operations-access",
+    "sk": "role:operations",
+  },
+  {
+    "deleted_at": "2024-04-01T00:00:00.000Z",
+    "name": "qa",
+    "pk": "suresh@example.com",
+    "privilege": "qa-access",
+    "sk": "role:qa",
+  },
+  {
+    "name": "reports",
+    "pk": "suresh@example.com",
+    "privilege": "reports",
+    "sk": "role:reports",
+  },
+  {
+    "deleted_at": "2024-02-01T00:00:00.000Z",
+    "name": "sales",
+    "pk": "suresh@example.com",
+    "privilege": "sales-access",
+    "sk": "role:sales",
+  },
+  {
+    "deleted_at": "2024-03-15T00:00:00.000Z",
+    "name": "support",
+    "pk": "suresh@example.com",
+    "privilege": "support-access",
+    "sk": "role:support",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Query suresh@example.com should fetch un-deleted roles for this user 1`] = `
+[
+  {
+    "name": "admin",
+    "pk": "suresh@example.com",
+    "privilege": "admin-access",
+    "sk": "role:admin",
+  },
+  {
+    "name": "basic",
+    "pk": "suresh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "finance",
+    "pk": "suresh@example.com",
+    "privilege": "finance-access",
+    "sk": "role:finance",
+  },
+  {
+    "name": "hr",
+    "pk": "suresh@example.com",
+    "privilege": "hr-access",
+    "sk": "role:hr",
+  },
+  {
+    "name": "it",
+    "pk": "suresh@example.com",
+    "privilege": "it-access",
+    "sk": "role:it",
+  },
+  {
+    "name": "marketing",
+    "pk": "suresh@example.com",
+    "privilege": "marketing-access",
+    "sk": "role:marketing",
+  },
+  {
+    "name": "operations",
+    "pk": "suresh@example.com",
+    "privilege": "operations-access",
+    "sk": "role:operations",
+  },
+  {
+    "name": "reports",
+    "pk": "suresh@example.com",
+    "privilege": "reports",
+    "sk": "role:reports",
+  },
+]
+`;

@@ -3,13 +3,10 @@ import { ddbDoc } from './ddb-setup';
 // Local Imports
 import {
     Table,
-    // Index,
     Query,
-    // DdbType,
-    // Operation,
 } from '../../src';
 
-describe('Integration Tests', () => {
+describe('Integration Tests: Files Table', () => {
     beforeAll(async () => {
         await ddbDoc.put({ TableName: 'files', Item: { id: '1', version: '2024-01-01', name: 'hello' } });
         await ddbDoc.put({ TableName: 'files', Item: { id: '1', version: '2024-01-02', name: 'world' } });
@@ -473,7 +470,6 @@ describe('Integration Tests', () => {
                     .filter.lt('name', 'C');
 
                 const query = x.toDynamo();
-                console.log(query);
                 const response = await ddbDoc.query(query);
 
                 expect(response).toMatchObject({
