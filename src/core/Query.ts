@@ -368,7 +368,7 @@ const formatFilterCondition = (filters: Array<Condition>) => {
     const attribNames = {};
     const usedValRefs = new Set<string>();
 
-    _.each(updatedFilters, (f, i) => {
+    _.each(updatedFilters, f => {
         let valRef = `:${_.trim(f.key, '#')}`;
         // Add numeric suffix if valRef is already used
         if (usedValRefs.has(valRef)) {
