@@ -473,7 +473,6 @@ describe('Integration Tests', () => {
                     .filter.lt('name', 'C');
 
                 const query = x.toDynamo();
-                console.log(query);
                 const response = await ddbDoc.query(query);
 
                 expect(response).toMatchObject({
