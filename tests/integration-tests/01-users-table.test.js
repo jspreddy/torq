@@ -6,8 +6,6 @@ import {
     Table,
     Query,
 } from '../../src';
-import _ from 'lodash';
-
 
 const usersTable = new Table('users', 'pk', 'sk');
 
