@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/midas",
-  "version": "0.1.16-0",
+  "version": "0.1.17-0",
   "description": "my dynamo library",
   "source": "src/index.ts",
   "main": "dist/main.js",
@@ -11,21 +11,15 @@
   },
   "scripts": {
     "ddb-local:cleanup": "npx kill-port 8000",
-
     "test": "jest /tests/",
-
     "test:all": "npm run ddb-local:cleanup && jest /tests/",
     "test:watch": "npm run ddb-local:cleanup && jest --watch /tests/",
-
     "test:int": "npm run ddb-local:cleanup && jest /tests/integration-tests/",
     "test:int:watch": "npm run ddb-local:cleanup && jest --watch /tests/integration-tests/",
-
     "test:unit": "jest /tests/unit-tests/",
     "test:unit:watch": "jest --watch /tests/unit-tests/",
-
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
-
     "watch": "parcel watch",
     "build": "npm run clean && parcel build",
     "clean": "rm -rf ./dist && rm -rf ./.parcel-cache"
