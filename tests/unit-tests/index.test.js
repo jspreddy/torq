@@ -930,4 +930,20 @@ describe('class: Query', () => {
             });
         });
     });
+
+    describe('Pagination', () => {
+        it('should return correct query for pagination', async () => {
+            const x = new Query(basicTable);
+            x.select().where.hash.eq('asdf').startAfter('iufh984h3f8hsdof');
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                },
+                ExclusiveStartKey: 'iufh984h3f8hsdof',
+                Limit: 25,
+            });
+        });
+    });
 });
