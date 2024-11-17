@@ -946,4 +946,56 @@ describe('class: Query', () => {
             });
         });
     });
+
+    describe('Consumed Capacity', () => {
+        it('should throw if invalid capacity type is specified', async () => {
+            const x = new Query(basicTable);
+            expect(() => {
+                x.select().withConsumedCapacity('INVALID');
+            }).toThrow('Query.withConsumedCapacity(): capacity type must be INDEXES, TOTAL, or NONE');
+        });
+
+        it('should return correct query for consumed capacity TOTAL', async () => {
+            const x = new Query(basicTable);
+            x.select().withConsumedCapacity('TOTAL');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ReturnConsumedCapacity: 'TOTAL',
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for consumed capacity INDEXES', async () => {
+            const x = new Query(basicTable);
+            x.select().withConsumedCapacity('INDEXES');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ReturnConsumedCapacity: 'INDEXES',
+                Limit: 25,
+            });
+        });
+
+        it('should default to TOTAL if no type is specified', async () => {
+            const x = new Query(basicTable);
+            x.select().withConsumedCapacity();
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ReturnConsumedCapacity: 'TOTAL',
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for consumed capacity NONE', async () => {
+            const x = new Query(basicTable);
+            x.select().withConsumedCapacity('NONE');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                Limit: 25,
+            });
+        });
+    });
 });

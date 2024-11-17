@@ -17,6 +17,7 @@ SQL Like Query interface for better code readability.
 - Supports **count**
 - Well Tested: Unit tests + Integration Tests (using `jest-dynamodb`).
 - Supports **Pagination**
+- Supports returning **Consumed Capacity** from dynamodb
 
 > See tests for all the features that are supported, and examples on how to use them.
 > - [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
@@ -122,17 +123,15 @@ See tests for all the features that are supported, and examples on how to use th
 
 # For Maintainer
 
-## Docs
+## Reference Docs
 
-Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html
+Docs for referencing while building this library.
+
+- [AWS Dynamodb](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html)
+- [Dynamo Reserved Words](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html)
 
 
 ## TODO
-
-
-TODO: Add support for consumed capacity.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Other.html#Query.CapacityUnits
-
 
 TODO: Add support for scan.
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html

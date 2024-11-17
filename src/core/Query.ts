@@ -60,6 +60,7 @@ export class Query {
     private _limit: number = Query.DEFAULT_LIMIT;
     private _count: boolean = false;
     private _startAfter: string | number | object | undefined;
+    private _consumedCapacity: string | undefined;
 
     get state() {
         return {
@@ -74,6 +75,7 @@ export class Query {
             limit: this._limit,
             count: this._count,
             startAfter: this._startAfter,
+            consumedCapacity: this._consumedCapacity,
         };
     }
 
@@ -249,6 +251,18 @@ export class Query {
         return this;
     }
 
+    withConsumedCapacity(capacityType: 'INDEXES' | 'TOTAL' | 'NONE' = 'TOTAL') {
+        assert(
+            capacityType === 'INDEXES' || capacityType === 'TOTAL' || capacityType === 'NONE',
+            'Query.withConsumedCapacity(): capacity type must be INDEXES, TOTAL, or NONE',
+        );
+        if (capacityType === 'NONE') {
+            return this;
+        }
+        this._consumedCapacity = capacityType;
+        return this;
+    }
+
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
@@ -270,6 +284,7 @@ export class Query {
             IndexName: this._index?.name,
             ScanIndexForward: this._scanForward,
             ExclusiveStartKey: this._startAfter,
+            ReturnConsumedCapacity: this._consumedCapacity,
         }, _.isNil);
     }
 }

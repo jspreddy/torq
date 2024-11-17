@@ -4,6 +4,7 @@ import { ddbDoc } from './ddb-setup';
 import {
     Table,
     Query,
+    Index,
 } from '../../src';
 
 describe('Integration Tests: Files Table', () => {
@@ -538,6 +539,82 @@ describe('Integration Tests: Files Table', () => {
                             hearts: 20,
                         },
                     ],
+                });
+            });
+        });
+
+        describe('Consumed Capacity', () => {
+            it('should return consumed capacity TOTAL', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.select()
+                    .where.hash.eq('stars')
+                    .withConsumedCapacity('TOTAL');
+
+                const response = await ddbDoc.query(x.toDynamo());
+                expect(response).toEqual({
+                    $metadata: expect.any(Object),
+                    ConsumedCapacity: {
+                        CapacityUnits: 0.5,
+                        TableName: 'files',
+                    },
+                    Count: 7,
+                    Items: expect.any(Array),
+                    ScannedCount: 7,
+                });
+            });
+
+            it('should return consumed capacity INDEXES, when querying a table', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.select()
+                    .where.hash.eq('stars')
+                    .withConsumedCapacity('INDEXES');
+
+                const response = await ddbDoc.query(x.toDynamo());
+                expect(response).toEqual({
+                    $metadata: expect.any(Object),
+                    ConsumedCapacity: {
+                        CapacityUnits: 0.5,
+                        Table: {
+                            CapacityUnits: 0.5,
+                        },
+                        TableName: 'files',
+                    },
+                    Count: 7,
+                    Items: expect.any(Array),
+                    ScannedCount: 7,
+                });
+            });
+
+            it('should return consumed capacity INDEXES, when querying an index', async () => {
+                const table = new Table('files', 'id', 'version');
+                const versionIndex = new Index('version-index', 'version');
+                const x = new Query(table);
+
+                x.select()
+                    .using(versionIndex)
+                    .where.hash.eq('2024-01')
+                    .withConsumedCapacity('INDEXES');
+
+                const response = await ddbDoc.query(x.toDynamo());
+                expect(response).toEqual({
+                    $metadata: expect.any(Object),
+                    ConsumedCapacity: {
+                        CapacityUnits: 0,
+                        GlobalSecondaryIndexes: {
+                            'version-index': {
+                                CapacityUnits: 0,
+                            },
+                        },
+                        Table: {
+                            CapacityUnits: 0,
+                        },
+                        TableName: 'files',
+                    },
+                    Count: 0,
+                    Items: [],
+                    ScannedCount: 0,
                 });
             });
         });
