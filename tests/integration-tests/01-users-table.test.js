@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { ddbDoc } from './ddb-setup';
 import userData from './data/users-data';
 import * as Promise from 'bluebird';
@@ -394,6 +395,75 @@ describe('Users Table Integration Tests', () => {
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(1);
                 expect(result.Items).toMatchSnapshot();
+            });
+        });
+
+        describe('ramesh@example.com: Pagination', () => {
+            it('should fetch first page of records, returning a last evaluated key', async () => {
+                const x = new Query(usersTable);
+                x.select().where.hash.eq('ramesh@example.com');
+                const result = await ddbDoc.query(x.toDynamo());
+                expect(result.Items.length).toBe(25);
+                expect(result.ScannedCount).toBe(25);
+                expect(result.LastEvaluatedKey).toEqual({
+                    "pk": "ramesh@example.com",
+                    "sk": "role:research-write",
+                });
+                expect(_.omit(result, '$metadata')).toMatchSnapshot();
+            });
+
+            it("should fetch second page of records, using the last evaluated key from the first page", async () => {
+                // total: 33, page1: 25, page2: 8
+                const x = new Query(usersTable);
+                x.select().where.hash.eq('ramesh@example.com');
+                const result = await ddbDoc.query(x.toDynamo());
+                expect(result.Items.length).toBe(25);
+                expect(result.ScannedCount).toBe(25);
+                expect(result.LastEvaluatedKey).toEqual({
+                    "pk": "ramesh@example.com",
+                    "sk": "role:research-write",
+                });
+                x.startAfter(result.LastEvaluatedKey);
+                const result2 = await ddbDoc.query(x.toDynamo());
+                expect(x.toDynamo()).toEqual({
+                    TableName: "users",
+                    KeyConditionExpression: "pk = :pk",
+                    ExpressionAttributeValues: {
+                        ":pk": "ramesh@example.com",
+                    },
+                    Limit: 25,
+                    ExclusiveStartKey: {
+                        pk: "ramesh@example.com",
+                        sk: "role:research-write",
+                    },
+                });
+                expect(result2.Items.length).toBe(8);
+                expect(result2.ScannedCount).toBe(8);
+                expect(_.omit(result2, '$metadata')).toMatchSnapshot();
+            });
+
+            it("should fetch fetch 3 records at a time", async () => {
+                // total: 33, page1: 25, page2: 8
+                const x = new Query(usersTable);
+                x.select().where.hash.eq('ramesh@example.com').limit(3);
+
+                let result;
+                let counter = 0;
+                let scannedCount = 0;
+                let records = [];
+                do {
+                    x.startAfter(result?.LastEvaluatedKey);
+                    result = await ddbDoc.query(x.toDynamo());
+                    counter += result.Items.length;
+                    scannedCount += result.ScannedCount;
+                    records.push(...result.Items);
+                } while (result.LastEvaluatedKey)
+
+
+                expect(counter).toBe(33);
+                expect(scannedCount).toBe(33);
+                expect(records.length).toBe(33);
+                expect(records).toMatchSnapshot();
             });
         });
     });

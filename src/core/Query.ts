@@ -59,6 +59,7 @@ export class Query {
     private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
     private _count: boolean = false;
+    private _startAfter: string | number | object | undefined;
 
     get state() {
         return {
@@ -72,6 +73,7 @@ export class Query {
             scanForward: this._scanForward,
             limit: this._limit,
             count: this._count,
+            startAfter: this._startAfter,
         };
     }
 
@@ -242,6 +244,11 @@ export class Query {
         return this;
     }
 
+    startAfter(lastEvaluatedKey: string | number | object | undefined) {
+        this._startAfter = lastEvaluatedKey;
+        return this;
+    }
+
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
@@ -262,6 +269,7 @@ export class Query {
             Limit: this._limit,
             IndexName: this._index?.name,
             ScanIndexForward: this._scanForward,
+            ExclusiveStartKey: this._startAfter,
         }, _.isNil);
     }
 }
