@@ -22,7 +22,8 @@
     "lint:fix": "npx eslint --fix .",
     "watch": "parcel watch",
     "build": "npm run clean && parcel build",
-    "clean": "rm -rf ./dist && rm -rf ./.parcel-cache"
+    "clean": "rm -rf ./dist && rm -rf ./.parcel-cache",
+    "check": "npm run lint; npm run test:int; npm run build;"
   },
   "author": "",
   "license": "ISC",
