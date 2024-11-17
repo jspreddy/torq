@@ -122,15 +122,17 @@ See tests for all the features that are supported, and examples on how to use th
 
 # For Maintainer
 
-## Docs
+## Reference Docs
 
-Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html
+Docs for referencing while building this library.
+
+- [AWS Dynamodb](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html)
+- [Dynamo Reserved Words](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html)
 
 
 ## TODO
 
-
-TODO: Add support for consumed capacity.
+WIP: Add support for consumed capacity.
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Other.html#Query.CapacityUnits
 
 
