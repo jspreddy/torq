@@ -541,5 +541,50 @@ describe('Integration Tests: Files Table', () => {
                 });
             });
         });
+
+        describe('Consumed Capacity', () => {
+            it('should return consumed capacity TOTAL', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.select()
+                    .where.hash.eq('stars')
+                    .withConsumedCapacity('TOTAL');
+
+                const response = await ddbDoc.query(x.toDynamo());
+                expect(response).toEqual({
+                    $metadata: expect.any(Object),
+                    ConsumedCapacity: {
+                        CapacityUnits: 0.5,
+                        TableName: 'files',
+                    },
+                    Count: 7,
+                    Items: expect.any(Array),
+                    ScannedCount: 7,
+                });
+            });
+
+            it('should return consumed capacity INDEXES', async () => {
+                const table = new Table('files', 'id', 'version');
+                const x = new Query(table);
+                x.select()
+                    .where.hash.eq('stars')
+                    .withConsumedCapacity('INDEXES');
+
+                const response = await ddbDoc.query(x.toDynamo());
+                expect(response).toEqual({
+                    $metadata: expect.any(Object),
+                    ConsumedCapacity: {
+                        CapacityUnits: 0.5,
+                        Table: {
+                            CapacityUnits: 0.5,
+                        },
+                        TableName: 'files',
+                    },
+                    Count: 7,
+                    Items: expect.any(Array),
+                    ScannedCount: 7,
+                });
+            });
+        });
     });
 });
