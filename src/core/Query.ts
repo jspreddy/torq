@@ -59,7 +59,7 @@ export class Query {
     private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
     private _count: boolean = false;
-    private _startAfter: any | undefined;
+    private _startAfter: string | number | object | undefined;
 
     get state() {
         return {
@@ -95,11 +95,6 @@ export class Query {
 
     count() {
         this._count = true;
-        return this;
-    }
-
-    startAfter(key: any) {
-        this._startAfter = key;
         return this;
     }
 
@@ -246,6 +241,11 @@ export class Query {
 
     limit(l: number): Query {
         this._limit = l ?? Query.DEFAULT_LIMIT;
+        return this;
+    }
+
+    startAfter(lastEvaluatedKey: string | number | object | undefined) {
+        this._startAfter = lastEvaluatedKey;
         return this;
     }
 
