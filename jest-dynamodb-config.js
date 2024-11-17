@@ -10,7 +10,17 @@ module.exports = {
                 { AttributeName: 'id', AttributeType: 'S' },
                 { AttributeName: 'version', AttributeType: 'S' },
             ],
-            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
+            GlobalSecondaryIndexes: [
+                {
+                    IndexName: 'version-index',
+                    KeySchema: [{ AttributeName: 'version', KeyType: 'HASH' }],
+                    Projection: {
+                        ProjectionType: 'ALL',
+                    },
+                    ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+                },
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
         },
         {
             TableName: `users`,
@@ -22,7 +32,7 @@ module.exports = {
                 { AttributeName: 'pk', AttributeType: 'S' },
                 { AttributeName: 'sk', AttributeType: 'S' },
             ],
-            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
+            ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
         }
     ],
 };
