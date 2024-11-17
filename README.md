@@ -16,6 +16,7 @@ SQL Like Query interface for better code readability.
 - Supports querying on **Indexes**, with optional scan direction
 - Supports **count**
 - Well Tested: Unit tests + Integration Tests (using `jest-dynamodb`).
+- Supports **Pagination**
 
 > See tests for all the features that are supported, and examples on how to use them.
 > - [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
@@ -127,10 +128,6 @@ Dynamodb: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Worki
 
 
 ## TODO
-
-
-TODO: Add support for pagination / lastEvaluatedKey.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html
 
 
 TODO: Add support for consumed capacity.
