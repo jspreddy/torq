@@ -95,6 +95,11 @@ export class Query {
         return this;
     }
 
+    scan(cols: string[]) {
+        this._selections = cols;
+        return this;
+    }
+
     count() {
         this._count = true;
         return this;

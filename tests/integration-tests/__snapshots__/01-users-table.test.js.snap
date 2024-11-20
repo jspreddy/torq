@@ -919,3 +919,263 @@ exports[`Users Table Integration Tests Query suresh@example.com should fetch un-
   },
 ]
 `;
+
+exports[`Users Table Integration Tests Scan should return all records 1`] = `
+[
+  {
+    "name": "admin",
+    "pk": "ramesh@example.com",
+    "privilege": "admin",
+    "sk": "role:admin",
+  },
+  {
+    "name": "analytics",
+    "pk": "ramesh@example.com",
+    "privilege": "analytics-read",
+    "sk": "role:analytics",
+  },
+  {
+    "name": "analytics-write",
+    "pk": "ramesh@example.com",
+    "privilege": "analytics-write",
+    "sk": "role:analytics-write",
+  },
+  {
+    "name": "basic",
+    "pk": "ramesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "compliance",
+    "pk": "ramesh@example.com",
+    "privilege": "compliance-read",
+    "sk": "role:compliance",
+  },
+  {
+    "name": "compliance-write",
+    "pk": "ramesh@example.com",
+    "privilege": "compliance-write",
+    "sk": "role:compliance-write",
+  },
+  {
+    "name": "engineering",
+    "pk": "ramesh@example.com",
+    "privilege": "engineering-read",
+    "sk": "role:engineering",
+  },
+  {
+    "name": "engineering-write",
+    "pk": "ramesh@example.com",
+    "privilege": "engineering-write",
+    "sk": "role:engineering-write",
+  },
+  {
+    "name": "finance",
+    "pk": "ramesh@example.com",
+    "privilege": "finance-read",
+    "sk": "role:finance",
+  },
+  {
+    "name": "finance-write",
+    "pk": "ramesh@example.com",
+    "privilege": "finance-write",
+    "sk": "role:finance-write",
+  },
+  {
+    "name": "hr",
+    "pk": "ramesh@example.com",
+    "privilege": "hr-read",
+    "sk": "role:hr",
+  },
+  {
+    "name": "hr-write",
+    "pk": "ramesh@example.com",
+    "privilege": "hr-write",
+    "sk": "role:hr-write",
+  },
+  {
+    "name": "legal",
+    "pk": "ramesh@example.com",
+    "privilege": "legal-read",
+    "sk": "role:legal",
+  },
+  {
+    "name": "legal-write",
+    "pk": "ramesh@example.com",
+    "privilege": "legal-write",
+    "sk": "role:legal-write",
+  },
+  {
+    "name": "marketing",
+    "pk": "ramesh@example.com",
+    "privilege": "marketing-read",
+    "sk": "role:marketing",
+  },
+  {
+    "name": "marketing-write",
+    "pk": "ramesh@example.com",
+    "privilege": "marketing-write",
+    "sk": "role:marketing-write",
+  },
+  {
+    "name": "operations",
+    "pk": "ramesh@example.com",
+    "privilege": "operations-read",
+    "sk": "role:operations",
+  },
+  {
+    "name": "operations-write",
+    "pk": "ramesh@example.com",
+    "privilege": "operations-write",
+    "sk": "role:operations-write",
+  },
+  {
+    "name": "product",
+    "pk": "ramesh@example.com",
+    "privilege": "product-read",
+    "sk": "role:product",
+  },
+  {
+    "name": "product-write",
+    "pk": "ramesh@example.com",
+    "privilege": "product-write",
+    "sk": "role:product-write",
+  },
+  {
+    "name": "quality",
+    "pk": "ramesh@example.com",
+    "privilege": "quality-read",
+    "sk": "role:quality",
+  },
+  {
+    "name": "quality-write",
+    "pk": "ramesh@example.com",
+    "privilege": "quality-write",
+    "sk": "role:quality-write",
+  },
+  {
+    "name": "reports",
+    "pk": "ramesh@example.com",
+    "privilege": "reports",
+    "sk": "role:reports",
+  },
+  {
+    "name": "research",
+    "pk": "ramesh@example.com",
+    "privilege": "research-read",
+    "sk": "role:research",
+  },
+  {
+    "name": "research-write",
+    "pk": "ramesh@example.com",
+    "privilege": "research-write",
+    "sk": "role:research-write",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all records with specific columns 1`] = `
+[
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:admin",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:analytics",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:analytics-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:basic",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:compliance",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:compliance-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:engineering",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:engineering-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:finance",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:finance-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:hr",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:hr-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:legal",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:legal-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:marketing",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:marketing-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:operations",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:operations-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:product",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:product-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:quality",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:quality-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:reports",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:research",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:research-write",
+  },
+]
+`;

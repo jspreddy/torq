@@ -133,7 +133,7 @@ Docs for referencing while building this library.
 
 ## TODO
 
-TODO: Add support for scan.
+WIP: Add support for scan.
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html
 
 

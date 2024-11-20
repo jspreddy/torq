@@ -999,3 +999,29 @@ describe('class: Query', () => {
         });
     });
 });
+
+
+describe('Scan', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should return correct scan query', async () => {
+        const x = new Query(basicTable);
+        x.scan();
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+    });
+
+    it('should return correct query for scan with specific columns', async () => {
+        const x = new Query(basicTable);
+        x.scan(['asdf', 'pqrs']);
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+            ProjectionExpression: 'asdf, pqrs',
+        });
+    });
+});

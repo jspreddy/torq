@@ -467,4 +467,22 @@ describe('Users Table Integration Tests', () => {
             });
         });
     });
+
+    describe('Scan', () => {
+        it('should return all records', async () => {
+            const x = new Query(usersTable);
+            x.scan();
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(25);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all records with specific columns', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk']);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(25);
+            expect(result.Items).toMatchSnapshot();
+        });
+    });
 });
