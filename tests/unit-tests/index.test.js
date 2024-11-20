@@ -315,6 +315,20 @@ describe('class: Query', () => {
                 },
             });
         });
+
+        it.skip('should return expression attribute names for reserved column names', async () => {
+            const x = new Query(basicTable);
+            x.select(['asdf', 'pqrs', 'name']);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ProjectionExpression: "asdf, pqrs, #name",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Filters', () => {
