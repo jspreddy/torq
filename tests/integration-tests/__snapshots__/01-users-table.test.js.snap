@@ -1179,3 +1179,46 @@ exports[`Users Table Integration Tests Scan should return all records with speci
   },
 ]
 `;
+
+exports[`Users Table Integration Tests Scan should return records for reserved column names 1`] = `
+[
+  {
+    "name": "admin",
+  },
+  {
+    "name": "analytics",
+  },
+  {
+    "name": "analytics-write",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return records for reserved column names and filter on same column 1`] = `
+[
+  {
+    "name": "basic",
+    "pk": "ramesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "ramana@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "mahesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "suresh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+]
+`;

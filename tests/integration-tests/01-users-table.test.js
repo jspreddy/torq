@@ -484,5 +484,23 @@ describe('Users Table Integration Tests', () => {
             expect(result.Items.length).toBe(25);
             expect(result.Items).toMatchSnapshot();
         });
+
+        it('should return records for reserved column names', async () => {
+            const x = new Query(usersTable);
+            x.scan(['name']).limit(3);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(3);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return records for reserved column names and filter on same column', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'name', 'privilege'])
+                .filter.beginsWith('name', 'b')
+                .limit(200);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(4);
+            expect(result.Items).toMatchSnapshot();
+        });
     });
 });

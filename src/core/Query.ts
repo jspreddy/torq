@@ -271,7 +271,7 @@ export class Query {
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
-        const projection = formatProjectionExpression(this._selections);
+        const [projection, projectionAttribNames] = formatProjectionExpression(this._selections);
 
         const hasCount = this._count;
         const hasSelect = !_.isNil(projection);
@@ -283,7 +283,7 @@ export class Query {
             ...projection,
             ...keyCond,
             ...filterCond,
-            ..._.merge(keyAttribNames, filterAttribNames),
+            ..._.merge(keyAttribNames, filterAttribNames, projectionAttribNames),
             ..._.merge(keyAttribVals, filterAttribVals),
             Limit: this._limit,
             IndexName: this._index?.name,
@@ -498,11 +498,26 @@ const formatFilterCondition = (filters: Array<Condition>) => {
 };
 
 const formatProjectionExpression = (proj: Array<string>) => {
-    if (_.isEmpty(proj)) {
-        return;
-    }
+    const attribNames = {};
 
-    return {
-        ProjectionExpression: _.join(proj, ", ")
-    };
+    if (_.isEmpty(proj)) {
+        return [undefined, attribNames];
+    }
+    const projection = _.map(proj, (col) => {
+        const attribRef = `#${_.trim(col)}`;
+        if (isReserved(col)) {
+            _.set(attribNames, attribRef, col);
+            return attribRef;
+        }
+        if (_.startsWith(col, "_")) {
+            _.set(attribNames, attribRef, col);
+            return attribRef;
+        }
+        return col;
+    });
+
+    return [
+        { ProjectionExpression: _.join(projection, ", ") },
+        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
+    ];
 };

@@ -316,7 +316,7 @@ describe('class: Query', () => {
             });
         });
 
-        it.skip('should return expression attribute names for reserved column names', async () => {
+        it('should return expression attribute names for reserved column names', async () => {
             const x = new Query(basicTable);
             x.select(['asdf', 'pqrs', 'name']);
 
@@ -324,6 +324,22 @@ describe('class: Query', () => {
                 TableName: 'some-table-name',
                 ProjectionExpression: "asdf, pqrs, #name",
                 ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for multiple reserved column names', async () => {
+            const x = new Query(basicTable);
+            x.select(['date', 'delete', 'name', 'asdf']);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ProjectionExpression: "#date, #delete, #name, asdf",
+                ExpressionAttributeNames: {
+                    "#date": "date",
+                    "#delete": "delete",
                     "#name": "name",
                 },
                 Limit: 25,
@@ -788,6 +804,29 @@ describe('class: Query', () => {
                 ExpressionAttributeNames: {
                     "#AGENT": "AGENT",
                     "#name": "name",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for selecting reserved column names and filtering on same column', async () => {
+            const x = new Query(new Table('some-table-name', 'pk', 'sk'));
+            x.select(['name', 'delete'])
+                .where.hash.eq('sai.jonnala')
+                .filter.eq('name', 'asdf');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk",
+                FilterExpression: "#name = :name",
+                ProjectionExpression: "#name, #delete",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                    "#delete": "delete",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ":name": 'asdf',
                 },
                 Limit: 25,
             });
