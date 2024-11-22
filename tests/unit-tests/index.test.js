@@ -1167,7 +1167,7 @@ describe('Modes', () => {
         }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
     });
 
-    it('should throw if more than one mode is used, 3', async () => {
+    it('should throw if more than 3 modes are used', async () => {
         const x = new Query(basicTable);
         expect(() => {
             x.select().scan().count();
