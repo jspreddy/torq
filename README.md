@@ -133,13 +133,15 @@ Docs for referencing while building this library.
 
 ## TODO
 
-WIP: Add support for scan.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html
+- WIP: Add support for scan.
+  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html
 
+- TODO: Provide an interface to run the dynamodb operations (Query, Scan).
 
-TODO: Add support for parallel scans.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.ParallelScan
+- TODO: Add recursive ddb query/scan to fill the requested limit.
 
+- TODO: Add support for parallel scans. 
+  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.ParallelScan
 
-TODO: Add support for easy ttl operations.
-https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
+- TODO: Add support for easy ttl operations.
+  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
