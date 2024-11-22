@@ -119,6 +119,7 @@ describe('class: Query', () => {
                 tableName: 'some-table-name',
                 hashKey: 'pk',
                 rangeKey: 'sk',
+                mode: 'select',
                 selections: ['asdf', 'pqrs'],
                 count: false,
                 keys: [
@@ -954,12 +955,9 @@ describe('class: Query', () => {
 
         it('should throw if count and select are used together', async () => {
             const x = new Query(basicTable);
-
-            x.count().select(['asdf', 'pqrs']);
-
             expect(() => {
-                x.toDynamo();
-            }).toThrow('Query.toDynamo(): Cannot use both count() and select()');
+                x.count().select(['asdf', 'pqrs']);
+            }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
         });
 
         it('should return correct query for count, index, where, filters', async () => {
@@ -1053,7 +1051,6 @@ describe('class: Query', () => {
     });
 });
 
-
 describe('Scan', () => {
     const basicTable = new Table('some-table-name', 'pk', 'sk');
 
@@ -1076,5 +1073,104 @@ describe('Scan', () => {
             Limit: 25,
             ProjectionExpression: 'asdf, pqrs',
         });
+    });
+
+    it('should throw if where clause is used with scan', async () => {
+        const x = new Query(basicTable);
+
+        expect(() => {
+            x.scan()
+                .where.hash.eq('sai.jonnala');
+        }).toThrow('Query.where: Cannot use "where" clause with scan(), use "filter" instead.');
+    });
+});
+
+describe('Modes', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should not throw if no mode is used', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.toDynamo();
+        }).not.toThrow();
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+        expect(x.state).toEqual({
+            tableName: 'some-table-name',
+            hashKey: 'pk',
+            rangeKey: 'sk',
+
+            mode: undefined,
+
+            selections: [],
+            keys: [],
+            filters: [],
+
+            index: undefined,
+            scanForward: undefined,
+            limit: 25,
+            count: false,
+            startAfter: undefined,
+            consumedCapacity: undefined,
+        });
+    });
+
+    it('should not throw if one mode is used', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select();
+        }).not.toThrow();
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+        expect(x.state).toEqual({
+            tableName: 'some-table-name',
+            hashKey: 'pk',
+            rangeKey: 'sk',
+
+            mode: 'select',
+
+            selections: undefined,
+            keys: [],
+            filters: [],
+
+            index: undefined,
+            scanForward: undefined,
+            limit: 25,
+            count: false,
+            startAfter: undefined,
+            consumedCapacity: undefined,
+        });
+    });
+
+    it('should throw if more than one mode is used, 1', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than one mode is used, 2', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.scan().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than one mode is used, 3', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().scan();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than one mode is used, 3', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().scan().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
     });
 });
