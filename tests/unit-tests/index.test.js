@@ -712,6 +712,32 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct query for multiple filters on same column', async () => {
+            const x = new Query(basicTable);
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('1234')
+                .filter.between('age', 10, 20)
+                .filter.gt('age', 15)
+                .filter.lt('age', 25);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "age BETWEEN :age_start AND :age_end and age > :age_1 and age < :age_2",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': '1234',
+                    ':age_start': 10,
+                    ':age_end': 20,
+                    ':age_1': 15,
+                    ':age_2': 25,
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved & Special Char Names', () => {
@@ -828,6 +854,29 @@ describe('class: Query', () => {
                 ExpressionAttributeValues: {
                     ":pk": 'sai.jonnala',
                     ":name": 'asdf',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for selecting _column names and filtering on same column', async () => {
+            const x = new Query(new Table('some-table-name', 'pk', 'sk'));
+            x.select(['_somename', '__code'])
+                .where.hash.eq('sai.jonnala')
+                .filter.eq('__code', 'asdf');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk",
+                FilterExpression: "#__code = :__code",
+                ProjectionExpression: "#_somename, #__code",
+                ExpressionAttributeNames: {
+                    "#_somename": "_somename",
+                    "#__code": "__code",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ":__code": 'asdf',
                 },
                 Limit: 25,
             });
