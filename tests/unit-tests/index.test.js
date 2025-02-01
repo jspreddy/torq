@@ -1242,3 +1242,65 @@ describe('Modes', () => {
         }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
     });
 });
+
+describe('Count', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should return correct count query', async () => {
+        const x = new Query(basicTable);
+        x.count();
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+        });
+    });
+
+    it('should discard columns if they are requested with count', async () => {
+        const x = new Query(basicTable);
+        x.count(['asdf', 'pqrs']);
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+        });
+    });
+
+    it('should return correct query if where clause is used with count', async () => {
+        const x = new Query(basicTable);
+        x.count()
+            .where.hash.eq('sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+            KeyConditionExpression: "pk = :pk",
+            ExpressionAttributeValues: {
+                ":pk": 'sai.jonnala',
+            },
+        });
+    });
+
+    it('should return correct query if filter is used with count', async () => {
+        const x = new Query(basicTable);
+
+        x.count()
+            .filter.eq('name', 'sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+            FilterExpression: "#name = :name",
+            ExpressionAttributeNames: {
+                "#name": "name",
+            },
+            ExpressionAttributeValues: {
+                ":name": 'sai.jonnala',
+            },
+        });
+    });
+});

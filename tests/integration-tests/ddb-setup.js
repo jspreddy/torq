@@ -68,10 +68,10 @@ export const ddbRecursive = {
                 ],
                 Items: [
                     ...result.Items,
-                    ...response.Items,
+                    ...(response.Items || []),
                 ],
-                Count: result.Count + response.Count,
-                ScannedCount: result.ScannedCount + response.ScannedCount,
+                Count: result.Count + (response.Count || 0),
+                ScannedCount: result.ScannedCount + (response.ScannedCount || 0),
                 LastEvaluatedKey: response.LastEvaluatedKey,
             };
         } while (!_.isNil(response?.LastEvaluatedKey));
