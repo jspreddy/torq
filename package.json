@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/midas",
-  "version": "0.1.21",
+  "version": "0.1.22-0",
   "description": "my dynamo library",
   "source": "src/index.ts",
   "main": "dist/main.js",
