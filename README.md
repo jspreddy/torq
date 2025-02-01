@@ -7,16 +7,15 @@ SQL Like query builder for dynamodb.
 
 SQL Like Query interface for better code readability.
 
+- Supports `select`, `scan` and `count` operations
+- Supports **select**ing specific columns
 - Supports **Hash Keys** and **Range Keys**
 - Supports **Filters**
 - Supports various operations for **Range Keys** and **Filters**
-- Supports **limit**ing results
-- Supports **select**ing specific columns
+- Supports **Pagination** and **limit**ing results.
 - Automatically handles reserved and special character attribute names by using `ExpressionAttributeNames`
 - Supports querying on **Indexes**, with optional scan direction
-- Supports **count**
 - Well Tested: Unit tests + Integration Tests (using `jest-dynamodb`).
-- Supports **Pagination**
 - Supports returning **Consumed Capacity** from dynamodb
 
 > See tests for all the features that are supported, and examples on how to use them.
@@ -129,18 +128,18 @@ Docs for referencing while building this library.
 
 - [AWS Dynamodb](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html)
 - [Dynamo Reserved Words](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html)
+- [Dynamo Scan](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html)
+- [Dynamo Parallel Scan](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.ParallelScan)
+- [Dynamo TTL](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
 
 
 ## TODO
-
-- WIP: Add support for scan.
-  https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html
 
 - TODO: Provide an interface to run the dynamodb operations (Query, Scan).
 
 - TODO: Add recursive ddb query/scan to fill the requested limit.
 
-- TODO: Add support for parallel scans. 
+- TODO: Add support for parallel scans.
   https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Scan.html#Scan.ParallelScan
 
 - TODO: Add support for easy ttl operations.
