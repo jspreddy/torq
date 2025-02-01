@@ -20,10 +20,12 @@ export enum DdbType {
 }
 
 type DynamoValue = string | number | boolean;
+
 type BetweenValues = {
     start: DynamoValue,
     end: DynamoValue,
 };
+
 export enum Operation {
     Eq = '=',
     NotEq = '<>',
@@ -32,6 +34,7 @@ export enum Operation {
     Lt = '<',
     LtEq = '<=',
 }
+
 type SizeValue = {
     val: DynamoValue,
     op: Operation,

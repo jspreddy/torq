@@ -1132,6 +1132,25 @@ describe('Scan', () => {
                 .where.hash.eq('sai.jonnala');
         }).toThrow('Query.where: Cannot use "where" clause with scan(), use "filter" instead.');
     });
+
+    it('should return correct query if filter is used with scan', async () => {
+        const x = new Query(basicTable);
+
+        x.scan()
+            .filter.eq('name', 'sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+            FilterExpression: "#name = :name",
+            ExpressionAttributeNames: {
+                "#name": "name",
+            },
+            ExpressionAttributeValues: {
+                ":name": 'sai.jonnala',
+            },
+        });
+    });
 });
 
 describe('Modes', () => {

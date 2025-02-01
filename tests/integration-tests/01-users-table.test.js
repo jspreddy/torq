@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ddbDoc } from './ddb-setup';
+import { ddbDoc, ddbRecursive } from './ddb-setup';
 import userData from './data/users-data';
 import * as Promise from 'bluebird';
 
@@ -500,6 +500,54 @@ describe('Users Table Integration Tests', () => {
                 .limit(200);
             const result = await ddbDoc.scan(x.toDynamo());
             expect(result.Items.length).toBe(4);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('with multiple filters, should return 1 record', async () => {
+            const x = new Query(usersTable);
+            x.scan()
+                .filter.eq('sk', 'user')
+                .filter.beginsWith('firstName', 's')
+                .filter.contains('firstName', 'h');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(1);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records', async () => {
+            const x = new Query(usersTable);
+            x.scan()
+                .filter.eq('sk', 'user');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(24);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records of age between 30 and 40', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'age'])
+                .filter.eq('sk', 'user')
+                .filter.gt('age', 30)
+                .filter.lt('age', 40);
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(10);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records with firstName containing "a" and "i"', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'firstName'])
+                .filter.eq('sk', 'user')
+                .filter.contains('firstName', 'a')
+                .filter.contains('firstName', 'i');
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(7);
             expect(result.Items).toMatchSnapshot();
         });
     });
