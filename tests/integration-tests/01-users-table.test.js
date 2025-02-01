@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ddbDoc } from './ddb-setup';
+import { ddbDoc, ddbRecursive } from './ddb-setup';
 import userData from './data/users-data';
 import * as Promise from 'bluebird';
 
@@ -465,6 +465,172 @@ describe('Users Table Integration Tests', () => {
                 expect(records.length).toBe(33);
                 expect(records).toMatchSnapshot();
             });
+        });
+    });
+
+    describe('Scan', () => {
+        it('should return all records', async () => {
+            const x = new Query(usersTable);
+            x.scan();
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(25);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all records with specific columns', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk']);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(25);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return records for reserved column names', async () => {
+            const x = new Query(usersTable);
+            x.scan(['name']).limit(3);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(3);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return records for reserved column names and filter on same column', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'name', 'privilege'])
+                .filter.beginsWith('name', 'b')
+                .limit(200);
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Items.length).toBe(4);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('with multiple filters, should return 1 record', async () => {
+            const x = new Query(usersTable);
+            x.scan()
+                .filter.eq('sk', 'user')
+                .filter.beginsWith('firstName', 's')
+                .filter.contains('firstName', 'h');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(1);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records', async () => {
+            const x = new Query(usersTable);
+            x.scan()
+                .filter.eq('sk', 'user');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(24);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records of age between 30 and 40', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'age'])
+                .filter.eq('sk', 'user')
+                .filter.gt('age', 30)
+                .filter.lt('age', 40);
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(10);
+            expect(result.Items).toMatchSnapshot();
+        });
+
+        it('should return all user records with firstName containing "a" and "i"', async () => {
+            const x = new Query(usersTable);
+            x.scan(['pk', 'sk', 'firstName'])
+                .filter.eq('sk', 'user')
+                .filter.contains('firstName', 'a')
+                .filter.contains('firstName', 'i');
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Items.length).toBe(7);
+            expect(result.Items).toMatchSnapshot();
+        });
+    });
+
+    describe('Count', () => {
+        it('should return count of records', async () => {
+            const x = new Query(usersTable);
+            x.count();
+            const result = await ddbDoc.scan(x.toDynamo());
+            expect(result.Count).toBe(25);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return recursive count of all records', async () => {
+            const x = new Query(usersTable);
+            x.count();
+            const result = await ddbRecursive.scanAll(x.toDynamo());
+            expect(result.Count).toBe(85);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return count of records for filter on reserved column name', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.beginsWith('name', 'b')
+                .limit(200);
+            const result = await ddbRecursive.scanAll(x.toDynamo());
+            expect(result.Count).toBe(4);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('with multiple filters, should return count of records', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.eq('sk', 'user')
+                .filter.beginsWith('firstName', 'r')
+                .filter.contains('firstName', 'a');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Count).toBe(4);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return count of users', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.eq('sk', 'user');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Count).toBe(24);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return count of users of age between 30 and 40', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.eq('sk', 'user')
+                .filter.gt('age', 30)
+                .filter.lt('age', 40);
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Count).toBe(10);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return count of users with firstName containing "a" and "i"', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.eq('sk', 'user')
+                .filter.contains('firstName', 'a')
+                .filter.contains('firstName', 'i');
+
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Count).toBe(7);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
         });
     });
 });

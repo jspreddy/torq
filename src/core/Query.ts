@@ -20,10 +20,12 @@ export enum DdbType {
 }
 
 type DynamoValue = string | number | boolean;
+
 type BetweenValues = {
     start: DynamoValue,
     end: DynamoValue,
 };
+
 export enum Operation {
     Eq = '=',
     NotEq = '<>',
@@ -32,6 +34,7 @@ export enum Operation {
     Lt = '<',
     LtEq = '<=',
 }
+
 type SizeValue = {
     val: DynamoValue,
     op: Operation,
@@ -51,10 +54,12 @@ export class Query {
     private _hashKey: string;
     private _rangeKey: string | undefined;
 
+    private _mode: 'select' | 'count' | 'scan' | undefined;
+
     private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
-    // TODO: Implement index usage.
+
     private _index: Index | undefined;
     private _scanForward: boolean | undefined;
     private _limit: number = Query.DEFAULT_LIMIT;
@@ -67,9 +72,13 @@ export class Query {
             tableName: this._tableName,
             hashKey: this._hashKey,
             rangeKey: this._rangeKey,
+
+            mode: this._mode,
+
             selections: this._selections,
             keys: this._keys,
             filters: this._filters,
+
             index: this._index,
             scanForward: this._scanForward,
             limit: this._limit,
@@ -91,16 +100,29 @@ export class Query {
     }
 
     select(cols: string[]) {
+        throwIfModeExists(this._mode);
         this._selections = cols;
+        this._mode = 'select';
+        return this;
+    }
+
+    scan(cols: string[]) {
+        throwIfModeExists(this._mode);
+        this._selections = cols;
+        this._mode = 'scan';
         return this;
     }
 
     count() {
+        throwIfModeExists(this._mode);
         this._count = true;
+        this._mode = 'count';
         return this;
     }
 
     get where() {
+        assert(this._mode !== 'scan', 'Query.where: Cannot use "where" clause with scan(), use "filter" instead.');
+
         const pushRangeKey = (val: Condition['val'], type: string) => {
             if (_.isNil(this._index)) {
                 assert(
@@ -266,11 +288,7 @@ export class Query {
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
         const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
-        const projection = formatProjectionExpression(this._selections);
-
-        const hasCount = this._count;
-        const hasSelect = !_.isNil(projection);
-        assert(!(hasCount && hasSelect), 'Query.toDynamo(): Cannot use both count() and select()');
+        const [projection, projectionAttribNames] = formatProjectionExpression(this._selections);
 
         return _.omitBy({
             TableName: this._tableName,
@@ -278,7 +296,7 @@ export class Query {
             ...projection,
             ...keyCond,
             ...filterCond,
-            ..._.merge(keyAttribNames, filterAttribNames),
+            ..._.merge(keyAttribNames, filterAttribNames, projectionAttribNames),
             ..._.merge(keyAttribVals, filterAttribVals),
             Limit: this._limit,
             IndexName: this._index?.name,
@@ -493,11 +511,30 @@ const formatFilterCondition = (filters: Array<Condition>) => {
 };
 
 const formatProjectionExpression = (proj: Array<string>) => {
-    if (_.isEmpty(proj)) {
-        return;
-    }
+    const attribNames = {};
 
-    return {
-        ProjectionExpression: _.join(proj, ", ")
-    };
+    if (_.isEmpty(proj)) {
+        return [undefined, attribNames];
+    }
+    const projection = _.map(proj, (col) => {
+        const attribRef = `#${_.trim(col)}`;
+        if (isReserved(col)) {
+            _.set(attribNames, attribRef, col);
+            return attribRef;
+        }
+        if (_.startsWith(col, "_")) {
+            _.set(attribNames, attribRef, col);
+            return attribRef;
+        }
+        return col;
+    });
+
+    return [
+        { ProjectionExpression: _.join(projection, ", ") },
+        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
+    ];
 };
+
+function throwIfModeExists(mode: string | undefined) {
+    assert(_.isEmpty(mode), 'Query: Cannot use more than one mode (select, count, scan) at the same time.');
+}

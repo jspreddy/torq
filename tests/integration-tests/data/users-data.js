@@ -165,83 +165,83 @@ export default [
     { pk: 'ramesh@example.com', sk: 'role:support-write', name: 'support-write', privilege: 'support-write' },
     { pk: 'ramesh@example.com', sk: 'role:support', name: 'support', privilege: 'support-read' },
 
-    // { pk: 'priya@example.com', sk: 'user', firstName: 'priya', lastName: 'sharma', age: 28, phone: '123-456-7891', address: '202 Cedar St', favStar: 'Vega Prime', favColor: 'purple', favCar: 'BMW' },
+    { pk: 'priya@example.com', sk: 'user', firstName: 'priya', lastName: 'sharma', age: 28, phone: '123-456-7891', address: '202 Cedar St', favStar: 'Vega Prime', favColor: 'purple', favCar: 'BMW' },
     // { pk: 'priya@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'priya@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'raj@example.com', sk: 'user', firstName: 'raj', lastName: 'patel', age: 45, phone: '123-456-7892', address: '303 Maple St', favStar: 'Procyon', favColor: 'orange', favCar: 'Audi' },
+    { pk: 'raj@example.com', sk: 'user', firstName: 'raj', lastName: 'patel', age: 45, phone: '123-456-7892', address: '303 Maple St', favStar: 'Procyon', favColor: 'orange', favCar: 'Audi' },
     // { pk: 'raj@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'raj@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'neha@example.com', sk: 'user', firstName: 'neha', lastName: 'gupta', age: 32, phone: '123-456-7893', address: '404 Birch St', favStar: 'Sun', favColor: 'pink', favCar: 'Mercedes' },
+    { pk: 'neha@example.com', sk: 'user', firstName: 'neha', lastName: 'gupta', age: 32, phone: '123-456-7893', address: '404 Birch St', favStar: 'Sun', favColor: 'pink', favCar: 'Mercedes' },
     // { pk: 'neha@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'neha@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'amit@example.com', sk: 'user', firstName: 'amit', lastName: 'singh', age: 38, phone: '123-456-7894', address: '505 Walnut St', favStar: 'Polaris', favColor: 'black', favCar: 'Lexus' },
+    { pk: 'amit@example.com', sk: 'user', firstName: 'amit', lastName: 'singh', age: 38, phone: '123-456-7894', address: '505 Walnut St', favStar: 'Polaris', favColor: 'black', favCar: 'Lexus' },
     // { pk: 'amit@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'amit@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'deepa@example.com', sk: 'user', firstName: 'deepa', lastName: 'verma', age: 29, phone: '123-456-7895', address: '606 Ash St', favStar: 'Sirius', favColor: 'white', favCar: 'Volvo' },
+    { pk: 'deepa@example.com', sk: 'user', firstName: 'deepa', lastName: 'verma', age: 29, phone: '123-456-7895', address: '606 Ash St', favStar: 'Sirius', favColor: 'white', favCar: 'Volvo' },
     // { pk: 'deepa@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'deepa@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'vikram@example.com', sk: 'user', firstName: 'vikram', lastName: 'malhotra', age: 42, phone: '123-456-7896', address: '707 Spruce St', favStar: 'Betelgeuse', favColor: 'gray', favCar: 'Jaguar' },
+    { pk: 'vikram@example.com', sk: 'user', firstName: 'vikram', lastName: 'malhotra', age: 42, phone: '123-456-7896', address: '707 Spruce St', favStar: 'Betelgeuse', favColor: 'gray', favCar: 'Jaguar' },
     // { pk: 'vikram@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'vikram@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'pooja@example.com', sk: 'user', firstName: 'pooja', lastName: 'joshi', age: 31, phone: '123-456-7897', address: '808 Fir St', favStar: 'Alpha Centauri', favColor: 'brown', favCar: 'Porsche' },
+    { pk: 'pooja@example.com', sk: 'user', firstName: 'pooja', lastName: 'joshi', age: 31, phone: '123-456-7897', address: '808 Fir St', favStar: 'Alpha Centauri', favColor: 'brown', favCar: 'Porsche' },
     // { pk: 'pooja@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'pooja@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'rahul@example.com', sk: 'user', firstName: 'rahul', lastName: 'shah', age: 36, phone: '123-456-7898', address: '909 Pine St', favStar: 'Vega Prime', favColor: 'maroon', favCar: 'Maserati' },
+    { pk: 'rahul@example.com', sk: 'user', firstName: 'rahul', lastName: 'shah', age: 36, phone: '123-456-7898', address: '909 Pine St', favStar: 'Vega Prime', favColor: 'maroon', favCar: 'Maserati' },
     // { pk: 'rahul@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'rahul@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'anjali@example.com', sk: 'user', firstName: 'anjali', lastName: 'mehta', age: 27, phone: '123-456-7899', address: '111 Oak St', favStar: 'Procyon', favColor: 'navy', favCar: 'Bentley' },
+    { pk: 'anjali@example.com', sk: 'user', firstName: 'anjali', lastName: 'mehta', age: 27, phone: '123-456-7899', address: '111 Oak St', favStar: 'Procyon', favColor: 'navy', favCar: 'Bentley' },
     // { pk: 'anjali@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'anjali@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'kiran@example.com', sk: 'user', firstName: 'kiran', lastName: 'desai', age: 44, phone: '123-456-7810', address: '222 Elm St', favStar: 'Sun', favColor: 'teal', favCar: 'Ferrari' },
+    { pk: 'kiran@example.com', sk: 'user', firstName: 'kiran', lastName: 'desai', age: 44, phone: '123-456-7810', address: '222 Elm St', favStar: 'Sun', favColor: 'teal', favCar: 'Ferrari' },
     // { pk: 'kiran@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'kiran@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'arjun@example.com', sk: 'user', firstName: 'arjun', lastName: 'kapoor', age: 33, phone: '123-456-7811', address: '333 Maple St', favStar: 'Polaris', favColor: 'crimson', favCar: 'Lamborghini' },
+    { pk: 'arjun@example.com', sk: 'user', firstName: 'arjun', lastName: 'kapoor', age: 33, phone: '123-456-7811', address: '333 Maple St', favStar: 'Polaris', favColor: 'crimson', favCar: 'Lamborghini' },
     // { pk: 'arjun@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'arjun@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'meera@example.com', sk: 'user', firstName: 'meera', lastName: 'roy', age: 39, phone: '123-456-7812', address: '444 Cedar St', favStar: 'Sirius', favColor: 'violet', favCar: 'Range Rover' },
+    { pk: 'meera@example.com', sk: 'user', firstName: 'meera', lastName: 'roy', age: 39, phone: '123-456-7812', address: '444 Cedar St', favStar: 'Sirius', favColor: 'violet', favCar: 'Range Rover' },
     // { pk: 'meera@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'meera@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'arun@example.com', sk: 'user', firstName: 'arun', lastName: 'nair', age: 34, phone: '123-456-7813', address: '555 Birch St', favStar: 'Betelgeuse', favColor: 'indigo', favCar: 'Rolls Royce' },
+    { pk: 'arun@example.com', sk: 'user', firstName: 'arun', lastName: 'nair', age: 34, phone: '123-456-7813', address: '555 Birch St', favStar: 'Betelgeuse', favColor: 'indigo', favCar: 'Rolls Royce' },
     // { pk: 'arun@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'arun@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'divya@example.com', sk: 'user', firstName: 'divya', lastName: 'menon', age: 41, phone: '123-456-7814', address: '666 Walnut St', favStar: 'Alpha Centauri', favColor: 'turquoise', favCar: 'McLaren' },
+    { pk: 'divya@example.com', sk: 'user', firstName: 'divya', lastName: 'menon', age: 41, phone: '123-456-7814', address: '666 Walnut St', favStar: 'Alpha Centauri', favColor: 'turquoise', favCar: 'McLaren' },
     // { pk: 'divya@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'divya@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'sanjay@example.com', sk: 'user', firstName: 'sanjay', lastName: 'iyer', age: 37, phone: '123-456-7815', address: '777 Ash St', favStar: 'Vega Prime', favColor: 'gold', favCar: 'Bugatti' },
+    { pk: 'sanjay@example.com', sk: 'user', firstName: 'sanjay', lastName: 'iyer', age: 37, phone: '123-456-7815', address: '777 Ash St', favStar: 'Vega Prime', favColor: 'gold', favCar: 'Bugatti' },
     // { pk: 'sanjay@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'sanjay@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'ritu@example.com', sk: 'user', firstName: 'ritu', lastName: 'das', age: 30, phone: '123-456-7816', address: '888 Spruce St', favStar: 'Procyon', favColor: 'silver', favCar: 'Aston Martin' },
+    { pk: 'ritu@example.com', sk: 'user', firstName: 'ritu', lastName: 'das', age: 30, phone: '123-456-7816', address: '888 Spruce St', favStar: 'Procyon', favColor: 'silver', favCar: 'Aston Martin' },
     // { pk: 'ritu@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'ritu@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'vivek@example.com', sk: 'user', firstName: 'vivek', lastName: 'sinha', age: 43, phone: '123-456-7817', address: '999 Fir St', favStar: 'Sun', favColor: 'bronze', favCar: 'Infiniti' },
+    { pk: 'vivek@example.com', sk: 'user', firstName: 'vivek', lastName: 'sinha', age: 43, phone: '123-456-7817', address: '999 Fir St', favStar: 'Sun', favColor: 'bronze', favCar: 'Infiniti' },
     // { pk: 'vivek@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'vivek@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'kavita@example.com', sk: 'user', firstName: 'kavita', lastName: 'bose', age: 35, phone: '123-456-7818', address: '121 Pine St', favStar: 'Polaris', favColor: 'magenta', favCar: 'Acura' },
+    { pk: 'kavita@example.com', sk: 'user', firstName: 'kavita', lastName: 'bose', age: 35, phone: '123-456-7818', address: '121 Pine St', favStar: 'Polaris', favColor: 'magenta', favCar: 'Acura' },
     // { pk: 'kavita@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'kavita@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'rohit@example.com', sk: 'user', firstName: 'rohit', lastName: 'sen', age: 40, phone: '123-456-7819', address: '131 Oak St', favStar: 'Sirius', favColor: 'cyan', favCar: 'Chrysler' },
+    { pk: 'rohit@example.com', sk: 'user', firstName: 'rohit', lastName: 'sen', age: 40, phone: '123-456-7819', address: '131 Oak St', favStar: 'Sirius', favColor: 'cyan', favCar: 'Chrysler' },
     // { pk: 'rohit@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'rohit@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 
-    // { pk: 'maya@example.com', sk: 'user', firstName: 'maya', lastName: 'rao', age: 26, phone: '123-456-7820', address: '141 Elm St', favStar: 'Betelgeuse', favColor: 'lime', favCar: 'Cadillac' },
+    { pk: 'maya@example.com', sk: 'user', firstName: 'maya', lastName: 'rao', age: 26, phone: '123-456-7820', address: '141 Elm St', favStar: 'Betelgeuse', favColor: 'lime', favCar: 'Cadillac' },
     // { pk: 'maya@example.com', sk: 'role:basic', name: 'basic', privilege: 'read-basic-app' },
     // { pk: 'maya@example.com', sk: 'role:reports', name: 'reports', privilege: 'reports' },
 

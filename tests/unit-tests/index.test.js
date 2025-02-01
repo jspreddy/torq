@@ -119,6 +119,7 @@ describe('class: Query', () => {
                 tableName: 'some-table-name',
                 hashKey: 'pk',
                 rangeKey: 'sk',
+                mode: 'select',
                 selections: ['asdf', 'pqrs'],
                 count: false,
                 keys: [
@@ -313,6 +314,36 @@ describe('class: Query', () => {
                     ":pk": 'aasdf',
                     ':sk': '1235:238h9084'
                 },
+            });
+        });
+
+        it('should return expression attribute names for reserved column names', async () => {
+            const x = new Query(basicTable);
+            x.select(['asdf', 'pqrs', 'name']);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ProjectionExpression: "asdf, pqrs, #name",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for multiple reserved column names', async () => {
+            const x = new Query(basicTable);
+            x.select(['date', 'delete', 'name', 'asdf']);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                ProjectionExpression: "#date, #delete, #name, asdf",
+                ExpressionAttributeNames: {
+                    "#date": "date",
+                    "#delete": "delete",
+                    "#name": "name",
+                },
+                Limit: 25,
             });
         });
     });
@@ -681,6 +712,32 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct query for multiple filters on same column', async () => {
+            const x = new Query(basicTable);
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('1234')
+                .filter.between('age', 10, 20)
+                .filter.gt('age', 15)
+                .filter.lt('age', 25);
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "age BETWEEN :age_start AND :age_end and age > :age_1 and age < :age_2",
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ':sk': '1234',
+                    ':age_start': 10,
+                    ':age_end': 20,
+                    ':age_1': 15,
+                    ':age_2': 25,
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved & Special Char Names', () => {
@@ -774,6 +831,52 @@ describe('class: Query', () => {
                 ExpressionAttributeNames: {
                     "#AGENT": "AGENT",
                     "#name": "name",
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for selecting reserved column names and filtering on same column', async () => {
+            const x = new Query(new Table('some-table-name', 'pk', 'sk'));
+            x.select(['name', 'delete'])
+                .where.hash.eq('sai.jonnala')
+                .filter.eq('name', 'asdf');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk",
+                FilterExpression: "#name = :name",
+                ProjectionExpression: "#name, #delete",
+                ExpressionAttributeNames: {
+                    "#name": "name",
+                    "#delete": "delete",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ":name": 'asdf',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for selecting _column names and filtering on same column', async () => {
+            const x = new Query(new Table('some-table-name', 'pk', 'sk'));
+            x.select(['_somename', '__code'])
+                .where.hash.eq('sai.jonnala')
+                .filter.eq('__code', 'asdf');
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk",
+                FilterExpression: "#__code = :__code",
+                ProjectionExpression: "#_somename, #__code",
+                ExpressionAttributeNames: {
+                    "#_somename": "_somename",
+                    "#__code": "__code",
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'sai.jonnala',
+                    ":__code": 'asdf',
                 },
                 Limit: 25,
             });
@@ -901,12 +1004,9 @@ describe('class: Query', () => {
 
         it('should throw if count and select are used together', async () => {
             const x = new Query(basicTable);
-
-            x.count().select(['asdf', 'pqrs']);
-
             expect(() => {
-                x.toDynamo();
-            }).toThrow('Query.toDynamo(): Cannot use both count() and select()');
+                x.count().select(['asdf', 'pqrs']);
+            }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
         });
 
         it('should return correct query for count, index, where, filters', async () => {
@@ -996,6 +1096,211 @@ describe('class: Query', () => {
                 TableName: 'some-table-name',
                 Limit: 25,
             });
+        });
+    });
+});
+
+describe('Scan', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should return correct scan query', async () => {
+        const x = new Query(basicTable);
+        x.scan();
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+    });
+
+    it('should return correct query for scan with specific columns', async () => {
+        const x = new Query(basicTable);
+        x.scan(['asdf', 'pqrs']);
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+            ProjectionExpression: 'asdf, pqrs',
+        });
+    });
+
+    it('should throw if where clause is used with scan', async () => {
+        const x = new Query(basicTable);
+
+        expect(() => {
+            x.scan()
+                .where.hash.eq('sai.jonnala');
+        }).toThrow('Query.where: Cannot use "where" clause with scan(), use "filter" instead.');
+    });
+
+    it('should return correct query if filter is used with scan', async () => {
+        const x = new Query(basicTable);
+
+        x.scan()
+            .filter.eq('name', 'sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+            FilterExpression: "#name = :name",
+            ExpressionAttributeNames: {
+                "#name": "name",
+            },
+            ExpressionAttributeValues: {
+                ":name": 'sai.jonnala',
+            },
+        });
+    });
+});
+
+describe('Modes', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should not throw if no mode is used', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.toDynamo();
+        }).not.toThrow();
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+        expect(x.state).toEqual({
+            tableName: 'some-table-name',
+            hashKey: 'pk',
+            rangeKey: 'sk',
+
+            mode: undefined,
+
+            selections: [],
+            keys: [],
+            filters: [],
+
+            index: undefined,
+            scanForward: undefined,
+            limit: 25,
+            count: false,
+            startAfter: undefined,
+            consumedCapacity: undefined,
+        });
+    });
+
+    it('should not throw if one mode is used', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select();
+        }).not.toThrow();
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Limit: 25,
+        });
+        expect(x.state).toEqual({
+            tableName: 'some-table-name',
+            hashKey: 'pk',
+            rangeKey: 'sk',
+
+            mode: 'select',
+
+            selections: undefined,
+            keys: [],
+            filters: [],
+
+            index: undefined,
+            scanForward: undefined,
+            limit: 25,
+            count: false,
+            startAfter: undefined,
+            consumedCapacity: undefined,
+        });
+    });
+
+    it('should throw if more than one mode is used, 1', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than one mode is used, 2', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.scan().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than one mode is used, 3', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().scan();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+
+    it('should throw if more than 3 modes are used', async () => {
+        const x = new Query(basicTable);
+        expect(() => {
+            x.select().scan().count();
+        }).toThrow('Query: Cannot use more than one mode (select, count, scan) at the same time.');
+    });
+});
+
+describe('Count', () => {
+    const basicTable = new Table('some-table-name', 'pk', 'sk');
+
+    it('should return correct count query', async () => {
+        const x = new Query(basicTable);
+        x.count();
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+        });
+    });
+
+    it('should discard columns if they are requested with count', async () => {
+        const x = new Query(basicTable);
+        x.count(['asdf', 'pqrs']);
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+        });
+    });
+
+    it('should return correct query if where clause is used with count', async () => {
+        const x = new Query(basicTable);
+        x.count()
+            .where.hash.eq('sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+            KeyConditionExpression: "pk = :pk",
+            ExpressionAttributeValues: {
+                ":pk": 'sai.jonnala',
+            },
+        });
+    });
+
+    it('should return correct query if filter is used with count', async () => {
+        const x = new Query(basicTable);
+
+        x.count()
+            .filter.eq('name', 'sai.jonnala');
+
+        expect(x.toDynamo()).toEqual({
+            TableName: 'some-table-name',
+            Select: 'COUNT',
+            Limit: 25,
+            FilterExpression: "#name = :name",
+            ExpressionAttributeNames: {
+                "#name": "name",
+            },
+            ExpressionAttributeValues: {
+                ":name": 'sai.jonnala',
+            },
         });
     });
 });

@@ -1,5 +1,148 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Users Table Integration Tests Count should return count of records 1`] = `
+{
+  "Count": 25,
+  "LastEvaluatedKey": {
+    "pk": "ramesh@example.com",
+    "sk": "role:research-write",
+  },
+  "ScannedCount": 25,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return count of records for filter on reserved column name 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    undefined,
+  ],
+  "Count": 4,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return count of users 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 24,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return count of users of age between 30 and 40 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 10,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return count of users with firstName containing "a" and "i" 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 7,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return recursive count of all records 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 85,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count with multiple filters, should return count of records 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 4,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
 exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses between 2 and 5 1`] = `
 [
   {
@@ -916,6 +1059,714 @@ exports[`Users Table Integration Tests Query suresh@example.com should fetch un-
     "pk": "suresh@example.com",
     "privilege": "reports",
     "sk": "role:reports",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all records 1`] = `
+[
+  {
+    "name": "admin",
+    "pk": "ramesh@example.com",
+    "privilege": "admin",
+    "sk": "role:admin",
+  },
+  {
+    "name": "analytics",
+    "pk": "ramesh@example.com",
+    "privilege": "analytics-read",
+    "sk": "role:analytics",
+  },
+  {
+    "name": "analytics-write",
+    "pk": "ramesh@example.com",
+    "privilege": "analytics-write",
+    "sk": "role:analytics-write",
+  },
+  {
+    "name": "basic",
+    "pk": "ramesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "compliance",
+    "pk": "ramesh@example.com",
+    "privilege": "compliance-read",
+    "sk": "role:compliance",
+  },
+  {
+    "name": "compliance-write",
+    "pk": "ramesh@example.com",
+    "privilege": "compliance-write",
+    "sk": "role:compliance-write",
+  },
+  {
+    "name": "engineering",
+    "pk": "ramesh@example.com",
+    "privilege": "engineering-read",
+    "sk": "role:engineering",
+  },
+  {
+    "name": "engineering-write",
+    "pk": "ramesh@example.com",
+    "privilege": "engineering-write",
+    "sk": "role:engineering-write",
+  },
+  {
+    "name": "finance",
+    "pk": "ramesh@example.com",
+    "privilege": "finance-read",
+    "sk": "role:finance",
+  },
+  {
+    "name": "finance-write",
+    "pk": "ramesh@example.com",
+    "privilege": "finance-write",
+    "sk": "role:finance-write",
+  },
+  {
+    "name": "hr",
+    "pk": "ramesh@example.com",
+    "privilege": "hr-read",
+    "sk": "role:hr",
+  },
+  {
+    "name": "hr-write",
+    "pk": "ramesh@example.com",
+    "privilege": "hr-write",
+    "sk": "role:hr-write",
+  },
+  {
+    "name": "legal",
+    "pk": "ramesh@example.com",
+    "privilege": "legal-read",
+    "sk": "role:legal",
+  },
+  {
+    "name": "legal-write",
+    "pk": "ramesh@example.com",
+    "privilege": "legal-write",
+    "sk": "role:legal-write",
+  },
+  {
+    "name": "marketing",
+    "pk": "ramesh@example.com",
+    "privilege": "marketing-read",
+    "sk": "role:marketing",
+  },
+  {
+    "name": "marketing-write",
+    "pk": "ramesh@example.com",
+    "privilege": "marketing-write",
+    "sk": "role:marketing-write",
+  },
+  {
+    "name": "operations",
+    "pk": "ramesh@example.com",
+    "privilege": "operations-read",
+    "sk": "role:operations",
+  },
+  {
+    "name": "operations-write",
+    "pk": "ramesh@example.com",
+    "privilege": "operations-write",
+    "sk": "role:operations-write",
+  },
+  {
+    "name": "product",
+    "pk": "ramesh@example.com",
+    "privilege": "product-read",
+    "sk": "role:product",
+  },
+  {
+    "name": "product-write",
+    "pk": "ramesh@example.com",
+    "privilege": "product-write",
+    "sk": "role:product-write",
+  },
+  {
+    "name": "quality",
+    "pk": "ramesh@example.com",
+    "privilege": "quality-read",
+    "sk": "role:quality",
+  },
+  {
+    "name": "quality-write",
+    "pk": "ramesh@example.com",
+    "privilege": "quality-write",
+    "sk": "role:quality-write",
+  },
+  {
+    "name": "reports",
+    "pk": "ramesh@example.com",
+    "privilege": "reports",
+    "sk": "role:reports",
+  },
+  {
+    "name": "research",
+    "pk": "ramesh@example.com",
+    "privilege": "research-read",
+    "sk": "role:research",
+  },
+  {
+    "name": "research-write",
+    "pk": "ramesh@example.com",
+    "privilege": "research-write",
+    "sk": "role:research-write",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all records with specific columns 1`] = `
+[
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:admin",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:analytics",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:analytics-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:basic",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:compliance",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:compliance-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:engineering",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:engineering-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:finance",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:finance-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:hr",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:hr-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:legal",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:legal-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:marketing",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:marketing-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:operations",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:operations-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:product",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:product-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:quality",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:quality-write",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:reports",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:research",
+  },
+  {
+    "pk": "ramesh@example.com",
+    "sk": "role:research-write",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all user records 1`] = `
+[
+  {
+    "address": "101 Pine St",
+    "age": 35,
+    "favCar": "Honda",
+    "favColor": "yellow",
+    "favStar": "Alpha Centauri",
+    "firstName": "ramesh",
+    "lastName": "yadav",
+    "phone": "123-456-7890",
+    "pk": "ramesh@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "111 Oak St",
+    "age": 27,
+    "favCar": "Bentley",
+    "favColor": "navy",
+    "favStar": "Procyon",
+    "firstName": "anjali",
+    "lastName": "mehta",
+    "phone": "123-456-7899",
+    "pk": "anjali@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "606 Ash St",
+    "age": 29,
+    "favCar": "Volvo",
+    "favColor": "white",
+    "favStar": "Sirius",
+    "firstName": "deepa",
+    "lastName": "verma",
+    "phone": "123-456-7895",
+    "pk": "deepa@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "123 Main St",
+    "age": 30,
+    "favCar": "Tesla",
+    "favColor": "blue",
+    "favStar": "Polaris",
+    "firstName": "ramana",
+    "lastName": "reddy",
+    "phone": "123-456-7890",
+    "pk": "ramana@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "789 Oak St",
+    "age": 40,
+    "favCar": "Toyota",
+    "favColor": "green",
+    "favStar": "Betelgeuse",
+    "firstName": "mahesh",
+    "lastName": "babu",
+    "phone": "123-456-7890",
+    "pk": "mahesh@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "222 Elm St",
+    "age": 44,
+    "favCar": "Ferrari",
+    "favColor": "teal",
+    "favStar": "Sun",
+    "firstName": "kiran",
+    "lastName": "desai",
+    "phone": "123-456-7810",
+    "pk": "kiran@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "505 Walnut St",
+    "age": 38,
+    "favCar": "Lexus",
+    "favColor": "black",
+    "favStar": "Polaris",
+    "firstName": "amit",
+    "lastName": "singh",
+    "phone": "123-456-7894",
+    "pk": "amit@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "444 Cedar St",
+    "age": 39,
+    "favCar": "Range Rover",
+    "favColor": "violet",
+    "favStar": "Sirius",
+    "firstName": "meera",
+    "lastName": "roy",
+    "phone": "123-456-7812",
+    "pk": "meera@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "808 Fir St",
+    "age": 31,
+    "favCar": "Porsche",
+    "favColor": "brown",
+    "favStar": "Alpha Centauri",
+    "firstName": "pooja",
+    "lastName": "joshi",
+    "phone": "123-456-7897",
+    "pk": "pooja@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "555 Birch St",
+    "age": 34,
+    "favCar": "Rolls Royce",
+    "favColor": "indigo",
+    "favStar": "Betelgeuse",
+    "firstName": "arun",
+    "lastName": "nair",
+    "phone": "123-456-7813",
+    "pk": "arun@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "999 Fir St",
+    "age": 43,
+    "favCar": "Infiniti",
+    "favColor": "bronze",
+    "favStar": "Sun",
+    "firstName": "vivek",
+    "lastName": "sinha",
+    "phone": "123-456-7817",
+    "pk": "vivek@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "888 Spruce St",
+    "age": 30,
+    "favCar": "Aston Martin",
+    "favColor": "silver",
+    "favStar": "Procyon",
+    "firstName": "ritu",
+    "lastName": "das",
+    "phone": "123-456-7816",
+    "pk": "ritu@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "777 Ash St",
+    "age": 37,
+    "favCar": "Bugatti",
+    "favColor": "gold",
+    "favStar": "Vega Prime",
+    "firstName": "sanjay",
+    "lastName": "iyer",
+    "phone": "123-456-7815",
+    "pk": "sanjay@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "404 Birch St",
+    "age": 32,
+    "favCar": "Mercedes",
+    "favColor": "pink",
+    "favStar": "Sun",
+    "firstName": "neha",
+    "lastName": "gupta",
+    "phone": "123-456-7893",
+    "pk": "neha@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "303 Maple St",
+    "age": 45,
+    "favCar": "Audi",
+    "favColor": "orange",
+    "favStar": "Procyon",
+    "firstName": "raj",
+    "lastName": "patel",
+    "phone": "123-456-7892",
+    "pk": "raj@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "707 Spruce St",
+    "age": 42,
+    "favCar": "Jaguar",
+    "favColor": "gray",
+    "favStar": "Betelgeuse",
+    "firstName": "vikram",
+    "lastName": "malhotra",
+    "phone": "123-456-7896",
+    "pk": "vikram@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "456 Elm St",
+    "age": 25,
+    "favCar": "Ford",
+    "favColor": "red",
+    "favStar": "Sirius",
+    "firstName": "suresh",
+    "lastName": "kumar",
+    "phone": "123-456-7890",
+    "pk": "suresh@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "202 Cedar St",
+    "age": 28,
+    "favCar": "BMW",
+    "favColor": "purple",
+    "favStar": "Vega Prime",
+    "firstName": "priya",
+    "lastName": "sharma",
+    "phone": "123-456-7891",
+    "pk": "priya@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "131 Oak St",
+    "age": 40,
+    "favCar": "Chrysler",
+    "favColor": "cyan",
+    "favStar": "Sirius",
+    "firstName": "rohit",
+    "lastName": "sen",
+    "phone": "123-456-7819",
+    "pk": "rohit@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "666 Walnut St",
+    "age": 41,
+    "favCar": "McLaren",
+    "favColor": "turquoise",
+    "favStar": "Alpha Centauri",
+    "firstName": "divya",
+    "lastName": "menon",
+    "phone": "123-456-7814",
+    "pk": "divya@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "121 Pine St",
+    "age": 35,
+    "favCar": "Acura",
+    "favColor": "magenta",
+    "favStar": "Polaris",
+    "firstName": "kavita",
+    "lastName": "bose",
+    "phone": "123-456-7818",
+    "pk": "kavita@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "909 Pine St",
+    "age": 36,
+    "favCar": "Maserati",
+    "favColor": "maroon",
+    "favStar": "Vega Prime",
+    "firstName": "rahul",
+    "lastName": "shah",
+    "phone": "123-456-7898",
+    "pk": "rahul@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "333 Maple St",
+    "age": 33,
+    "favCar": "Lamborghini",
+    "favColor": "crimson",
+    "favStar": "Polaris",
+    "firstName": "arjun",
+    "lastName": "kapoor",
+    "phone": "123-456-7811",
+    "pk": "arjun@example.com",
+    "sk": "user",
+  },
+  {
+    "address": "141 Elm St",
+    "age": 26,
+    "favCar": "Cadillac",
+    "favColor": "lime",
+    "favStar": "Betelgeuse",
+    "firstName": "maya",
+    "lastName": "rao",
+    "phone": "123-456-7820",
+    "pk": "maya@example.com",
+    "sk": "user",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all user records of age between 30 and 40 1`] = `
+[
+  {
+    "age": 35,
+    "pk": "ramesh@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 38,
+    "pk": "amit@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 39,
+    "pk": "meera@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 31,
+    "pk": "pooja@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 34,
+    "pk": "arun@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 37,
+    "pk": "sanjay@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 32,
+    "pk": "neha@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 35,
+    "pk": "kavita@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 36,
+    "pk": "rahul@example.com",
+    "sk": "user",
+  },
+  {
+    "age": 33,
+    "pk": "arjun@example.com",
+    "sk": "user",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return all user records with firstName containing "a" and "i" 1`] = `
+[
+  {
+    "firstName": "anjali",
+    "pk": "anjali@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "kiran",
+    "pk": "kiran@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "amit",
+    "pk": "amit@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "vikram",
+    "pk": "vikram@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "priya",
+    "pk": "priya@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "divya",
+    "pk": "divya@example.com",
+    "sk": "user",
+  },
+  {
+    "firstName": "kavita",
+    "pk": "kavita@example.com",
+    "sk": "user",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return records for reserved column names 1`] = `
+[
+  {
+    "name": "admin",
+  },
+  {
+    "name": "analytics",
+  },
+  {
+    "name": "analytics-write",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan should return records for reserved column names and filter on same column 1`] = `
+[
+  {
+    "name": "basic",
+    "pk": "ramesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "ramana@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "mahesh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+  {
+    "name": "basic",
+    "pk": "suresh@example.com",
+    "privilege": "read-basic-app",
+    "sk": "role:basic",
+  },
+]
+`;
+
+exports[`Users Table Integration Tests Scan with multiple filters, should return 1 record 1`] = `
+[
+  {
+    "address": "456 Elm St",
+    "age": 25,
+    "favCar": "Ford",
+    "favColor": "red",
+    "favStar": "Sirius",
+    "firstName": "suresh",
+    "lastName": "kumar",
+    "phone": "123-456-7890",
+    "pk": "suresh@example.com",
+    "sk": "user",
   },
 ]
 `;
