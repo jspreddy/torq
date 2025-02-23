@@ -47,6 +47,16 @@ type Condition = {
     actualName?: string,
 };
 
+type Replacements = {
+    keys: Record<string, string>;
+    vals: Record<string, DynamoValue>;
+};
+
+type RawFilter = {
+    condition: string;
+    replacements: Replacements;
+} | undefined;
+
 export class Query {
     static DEFAULT_LIMIT = 25;
 
@@ -59,6 +69,7 @@ export class Query {
     private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
+    private _rawFilter: RawFilter;
 
     private _index: Index | undefined;
     private _scanForward: boolean | undefined;
@@ -248,6 +259,13 @@ export class Query {
                 this._filters.push({ key, val: { start, end }, type: 'between' });
                 return this;
             },
+            raw: (filterCondition: string, replacements: Replacements): Query => {
+                this._rawFilter = {
+                    condition: filterCondition,
+                    replacements,
+                };
+                return this;
+            },
         };
         return filterConditions;
     }
@@ -287,7 +305,7 @@ export class Query {
 
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
-        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters);
+        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters, this._rawFilter);
         const [projection, projectionAttribNames] = formatProjectionExpression(this._selections);
 
         return _.omitBy({
@@ -401,7 +419,7 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
     ];
 };
 
-const formatFilterCondition = (filters: Array<Condition>) => {
+const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilter) => {
     const updatedFilters = replaceReservedNames(filters);
 
     const filterParts: string[] = [];
@@ -501,7 +519,13 @@ const formatFilterCondition = (filters: Array<Condition>) => {
         }
     });
 
-    const filterExp = _.join(filterParts, ' and ');
+    let filterExp = _.join(filterParts, ' and ');
+
+    if (customFilter) {
+        filterExp = _.join(_.compact([filterExp, customFilter.condition]), ' and ');
+        _.merge(attribVals, customFilter.replacements.vals);
+        _.merge(attribNames, customFilter.replacements.keys);
+    }
 
     return [
         { FilterExpression: _.isEmpty(filterExp) ? undefined : filterExp },
