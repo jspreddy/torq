@@ -167,30 +167,6 @@ exports[`Users Table Integration Tests Count should return recursive count of al
 }
 `;
 
-exports[`Users Table Integration Tests Count with multiple filters, should return count of records 1`] = `
-{
-  "$LastEvaluatedKeys": [
-    {
-      "pk": "ramesh@example.com",
-      "sk": "role:research-write",
-    },
-    {
-      "pk": "mahesh@example.com",
-      "sk": "role:basic",
-    },
-    {
-      "pk": "suresh@example.com",
-      "sk": "role:reports",
-    },
-    undefined,
-  ],
-  "Count": 4,
-  "Items": [],
-  "LastEvaluatedKey": undefined,
-  "ScannedCount": 85,
-}
-`;
-
 exports[`Users Table Integration Tests Query mahesh@example.com should fetch addresses between 2 and 5 1`] = `
 [
   {
