@@ -23,6 +23,54 @@ exports[`Users Table Integration Tests Count should return count of records for 
 }
 `;
 
+exports[`Users Table Integration Tests Count should return count of records using multiple filters 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 4,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
+exports[`Users Table Integration Tests Count should return count of records using raw filter 1`] = `
+{
+  "$LastEvaluatedKeys": [
+    {
+      "pk": "ramesh@example.com",
+      "sk": "role:research-write",
+    },
+    {
+      "pk": "mahesh@example.com",
+      "sk": "role:basic",
+    },
+    {
+      "pk": "suresh@example.com",
+      "sk": "role:reports",
+    },
+    undefined,
+  ],
+  "Count": 4,
+  "Items": [],
+  "LastEvaluatedKey": undefined,
+  "ScannedCount": 85,
+}
+`;
+
 exports[`Users Table Integration Tests Count should return count of users 1`] = `
 {
   "$LastEvaluatedKeys": [
