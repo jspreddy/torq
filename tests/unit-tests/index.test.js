@@ -777,6 +777,48 @@ describe('class: Query', () => {
                 Limit: 25,
             });
         });
+
+        it('should return correct query for normal filter and raw filter used together', () => {
+            const x = new Query(basicTable);
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('1234')
+                .filter.eq('name', 'asdf')
+                .filter.raw('#a = :a or (#b = :b and #c = :c)', {
+                    keys: {
+                        '#a': 'age',
+                        '#b': 'breakfast',
+                        '#c': 'color',
+                    },
+                    vals: {
+                        ':a': 10,
+                        ':b': 'cereal',
+                        ':c': 'blue',
+                    },
+                });
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "#name = :name and (#a = :a or (#b = :b and #c = :c))",
+                ExpressionAttributeNames: {
+                    '#name': 'name',
+                    '#a': 'age',
+                    '#b': 'breakfast',
+                    '#c': 'color',
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ":sk": '1234',
+                    ":name": 'asdf',
+                    ":a": 10,
+                    ":b": 'cereal',
+                    ":c": 'blue',
+                },
+                Limit: 25,
+            });
+        });
     });
 
     describe('Reserved & Special Char Names', () => {

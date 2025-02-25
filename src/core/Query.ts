@@ -522,7 +522,12 @@ const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilte
     let filterExp = _.join(filterParts, ' and ');
 
     if (customFilter) {
-        filterExp = _.join(_.compact([filterExp, customFilter.condition]), ' and ');
+        if (_.isEmpty(filterExp)) {
+            filterExp = customFilter.condition
+        }
+        else {
+            filterExp = _.join([filterExp, `(${customFilter.condition})`], ' and ');
+        }
         _.merge(attribVals, customFilter.replacements.vals);
         _.merge(attribNames, customFilter.replacements.keys);
     }
