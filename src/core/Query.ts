@@ -47,6 +47,12 @@ type Condition = {
     actualName?: string,
 };
 
+type ProjectionExpressionObj = { ProjectionExpression: string | undefined };
+type KeyConditionExpressionObj = { KeyConditionExpression: string | undefined };
+type FilterExpressionObj = { FilterExpression: string | undefined };
+type ExpressionAttributeValuesObj = { ExpressionAttributeValues: object | undefined };
+type ExpressionAttributeNamesObj = { ExpressionAttributeNames: object | undefined };
+
 type Replacements = {
     keys: Record<string, string>;
     vals: Record<string, DynamoValue>;
@@ -205,23 +211,23 @@ export class Query {
                 return this;
             },
             notEq: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val: val, type: 'notEq' });
+                this._filters.push({ key, val, type: 'notEq' });
                 return this;
             },
             gt: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val: val, type: 'gt' });
+                this._filters.push({ key, val, type: 'gt' });
                 return this;
             },
             gtEq: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val: val, type: 'gtEq' });
+                this._filters.push({ key, val, type: 'gtEq' });
                 return this;
             },
             lt: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val: val, type: 'lt' });
+                this._filters.push({ key, val, type: 'lt' });
                 return this;
             },
             ltEq: (key: string, val: DynamoValue): Query => {
-                this._filters.push({ key, val: val, type: 'ltEq' });
+                this._filters.push({ key, val, type: 'ltEq' });
                 return this;
             },
             beginsWith: (key: string, val: DynamoValue): Query => {
@@ -353,7 +359,7 @@ const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> =>
     });
 };
 
-const formatKeyCondition = (conditions: Array<Condition>) => {
+const formatKeyCondition = (conditions: Array<Condition>): [KeyConditionExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
     const updatedConditions = replaceReservedNames(conditions);
 
     const conditionParts: string[] = [];
@@ -419,7 +425,7 @@ const formatKeyCondition = (conditions: Array<Condition>) => {
     ];
 };
 
-const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilter) => {
+const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilter): [FilterExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
     const updatedFilters = replaceReservedNames(filters);
 
     const filterParts: string[] = [];
@@ -539,12 +545,9 @@ const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilte
     ];
 };
 
-const formatProjectionExpression = (proj: Array<string>) => {
+const formatProjectionExpression = (proj: Array<string>): [ProjectionExpressionObj, ExpressionAttributeNamesObj] => {
     const attribNames = {};
 
-    if (_.isEmpty(proj)) {
-        return [undefined, attribNames];
-    }
     const projection = _.map(proj, (col) => {
         const attribRef = `#${_.trim(col)}`;
         if (isReserved(col)) {
@@ -559,7 +562,7 @@ const formatProjectionExpression = (proj: Array<string>) => {
     });
 
     return [
-        { ProjectionExpression: _.join(projection, ", ") },
+        { ProjectionExpression: _.isEmpty(projection) ? undefined : _.join(projection, ", ") },
         { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
     ];
 };
