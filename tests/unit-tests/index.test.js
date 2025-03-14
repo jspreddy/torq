@@ -761,7 +761,7 @@ describe('class: Query', () => {
             expect(x.toDynamo()).toEqual({
                 TableName: 'some-table-name',
                 KeyConditionExpression: "pk = :pk and sk = :sk",
-                FilterExpression: "#a = :a or (#b = :b and #c = :c)",
+                FilterExpression: "(#a = :a or (#b = :b and #c = :c))",
                 ExpressionAttributeNames: {
                     '#a': 'asdf',
                     '#b': 'bcvx',
@@ -815,6 +815,58 @@ describe('class: Query', () => {
                     ":a": 10,
                     ":b": 'cereal',
                     ":c": 'blue',
+                },
+                Limit: 25,
+            });
+        });
+
+        it('should return correct query for multiple raw filters used together', () => {
+            const x = new Query(basicTable);
+
+            x.select()
+                .where.hash.eq('asdf')
+                .where.range.eq('1234')
+                .filter.eq('name', 'asdf')
+                .filter.raw('#a = :a or #b = :b', {
+                    keys: {
+                        '#a': 'age',
+                        '#b': 'breakfast',
+                    },
+                    vals: {
+                        ':a': 10,
+                        ':b': 'cereal',
+                    },
+                })
+                .filter.raw('#c = :c or #d = :d', {
+                    keys: {
+                        '#c': 'color',
+                        '#d': 'art_medium',
+                    },
+                    vals: {
+                        ':c': 'blue',
+                        ':d': 'crayon',
+                    },
+                });
+
+            expect(x.toDynamo()).toEqual({
+                TableName: 'some-table-name',
+                KeyConditionExpression: "pk = :pk and sk = :sk",
+                FilterExpression: "#name = :name and (#a = :a or #b = :b) and (#c = :c or #d = :d)",
+                ExpressionAttributeNames: {
+                    '#name': 'name',
+                    '#a': 'age',
+                    '#b': 'breakfast',
+                    '#c': 'color',
+                    '#d': 'art_medium',
+                },
+                ExpressionAttributeValues: {
+                    ":pk": 'asdf',
+                    ":sk": '1234',
+                    ":name": 'asdf',
+                    ":a": 10,
+                    ":b": 'cereal',
+                    ":c": 'blue',
+                    ":d": 'crayon',
                 },
                 Limit: 25,
             });

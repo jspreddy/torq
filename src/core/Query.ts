@@ -75,7 +75,7 @@ export class Query {
     private _selections: string[];
     private _keys: Array<Condition>;
     private _filters: Array<Condition>;
-    private _rawFilter: RawFilter;
+    private _rawFilters: Array<RawFilter>;
 
     private _index: Index | undefined;
     private _scanForward: boolean | undefined;
@@ -114,6 +114,7 @@ export class Query {
         this._filters = [];
         this._keys = [];
         this._selections = [];
+        this._rawFilters = [];
     }
 
     select(cols: string[]) {
@@ -266,10 +267,10 @@ export class Query {
                 return this;
             },
             raw: (filterCondition: string, replacements: Replacements): Query => {
-                this._rawFilter = {
+                this._rawFilters.push({
                     condition: filterCondition,
                     replacements,
-                };
+                });
                 return this;
             },
         };
@@ -311,7 +312,7 @@ export class Query {
 
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
-        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters, this._rawFilter);
+        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters, this._rawFilters);
         const [projection, projectionAttribNames] = formatProjectionExpression(this._selections);
 
         return _.omitBy({
@@ -425,7 +426,7 @@ const formatKeyCondition = (conditions: Array<Condition>): [KeyConditionExpressi
     ];
 };
 
-const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilter): [FilterExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
+const formatFilterCondition = (filters: Array<Condition>, rawFilters: Array<RawFilter>): [FilterExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
     const updatedFilters = replaceReservedNames(filters);
 
     const filterParts: string[] = [];
@@ -527,15 +528,16 @@ const formatFilterCondition = (filters: Array<Condition>, customFilter: RawFilte
 
     let filterExp = _.join(filterParts, ' and ');
 
-    if (customFilter) {
+    if (rawFilters.length > 0) {
+        const rawFilterCondition = _.chain(rawFilters).map(f => f ? `(${f.condition})` : undefined).compact().join(' and ').value();
         if (_.isEmpty(filterExp)) {
-            filterExp = customFilter.condition
+            filterExp = rawFilterCondition;
         }
         else {
-            filterExp = _.join([filterExp, `(${customFilter.condition})`], ' and ');
+            filterExp = _.join([filterExp, rawFilterCondition], ' and ');
         }
-        _.merge(attribVals, customFilter.replacements.vals);
-        _.merge(attribNames, customFilter.replacements.keys);
+        _.merge(attribVals, _.chain(rawFilters).map(f => f?.replacements.vals).compact().reduce(_.merge, {}).value());
+        _.merge(attribNames, _.chain(rawFilters).map(f => f?.replacements.keys).compact().reduce(_.merge, {}).value());
     }
 
     return [
