@@ -581,12 +581,32 @@ describe('Users Table Integration Tests', () => {
             expect(_.omit(result, '$metadata')).toMatchSnapshot();
         });
 
-        it('with multiple filters, should return count of records', async () => {
+        it('should return count of records using multiple filters', async () => {
             const x = new Query(usersTable);
             x.count()
                 .filter.eq('sk', 'user')
                 .filter.beginsWith('firstName', 'r')
                 .filter.contains('firstName', 'a');
+            const query = x.toDynamo();
+            const result = await ddbRecursive.scanAll(query);
+            expect(result.Count).toBe(4);
+            expect(result.Items.length).toBe(0);
+            expect(_.omit(result, '$metadata')).toMatchSnapshot();
+        });
+
+        it('should return count of records using raw filter', async () => {
+            const x = new Query(usersTable);
+            x.count()
+                .filter.raw('sk = :sk and begins_with(#fn, :fn1) and contains(#fn, :fn2)', {
+                    keys: {
+                        '#fn': 'firstName',
+                    },
+                    vals: {
+                        ':sk': 'user',
+                        ':fn1': 'r',
+                        ':fn2': 'a'
+                    }
+                });
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Count).toBe(4);
