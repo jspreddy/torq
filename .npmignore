@@ -12,3 +12,6 @@ eslint.config.mjs
 *.tgz
 *.gz
 .github
+coverage
+jest.config.js
+jest-dynamodb-config.js
