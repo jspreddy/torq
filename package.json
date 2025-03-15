@@ -3,7 +3,6 @@
   "version": "0.1.27-0",
   "description": "my dynamo library",
   "source": "src/index.ts",
-  "main": "dist/main.js",
   "module": "dist/module.js",
   "types": "dist/types.d.ts",
   "engines": {

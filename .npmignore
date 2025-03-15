@@ -15,4 +15,3 @@ eslint.config.mjs
 coverage
 jest.config.js
 jest-dynamodb-config.js
-src
