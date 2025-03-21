@@ -1,4 +1,4 @@
-# midas
+# torq
 
 SQL Like query builder for dynamodb.
 
@@ -19,9 +19,9 @@ SQL Like Query interface for better code readability.
 - Supports returning **Consumed Capacity** from dynamodb
 
 > See tests for all the features that are supported, and examples on how to use them.
-> - [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
-> - [Integration tests: Files Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/00-files-table.test.js#L45)
-> - [Integration tests: Users Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/01-users-table.test.js#L33)
+> - [Unit Tests](https://github.com/jspreddy/torq/blob/main/tests/unit-tests/index.test.js)
+> - [Integration tests: Files Table](https://github.com/jspreddy/torq/blob/main/tests/integration-tests/00-files-table.test.js#L45)
+> - [Integration tests: Users Table](https://github.com/jspreddy/torq/blob/main/tests/integration-tests/01-users-table.test.js#L33)
 
 
 ## Examples
@@ -103,16 +103,16 @@ This is the resulting dynamo query.
 }
 ```
 
-> See the section on `"Reserved & Special Char Names"` in [unit tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/query.test.js#L570) for more examples.
+> See the section on `"Reserved & Special Char Names"` in [unit tests](https://github.com/jspreddy/torq/blob/main/tests/unit-tests/query.test.js#L570) for more examples.
 
 
 
 ### More Examples
 
 See tests for all the features that are supported, and examples on how to use them.
-- [Unit Tests](https://github.com/jspreddy/midas/blob/main/tests/unit-tests/index.test.js)
-- [Integration tests: Files Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/00-files-table.test.js#L45)
-- [Integration tests: Users Table](https://github.com/jspreddy/midas/blob/main/tests/integration-tests/01-users-table.test.js#L33)
+- [Unit Tests](https://github.com/jspreddy/torq/blob/main/tests/unit-tests/index.test.js)
+- [Integration tests: Files Table](https://github.com/jspreddy/torq/blob/main/tests/integration-tests/00-files-table.test.js#L45)
+- [Integration tests: Users Table](https://github.com/jspreddy/torq/blob/main/tests/integration-tests/01-users-table.test.js#L33)
 
 
 
