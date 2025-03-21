@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/torq",
-  "version": "0.1.30-0",
+  "version": "0.1.30",
   "description": "SQL Like query builder for dynamodb.",
   "author": "Sai Phaninder Reddy Jonnala",
   "license": "MIT",
