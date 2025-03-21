@@ -1,6 +1,6 @@
 {
   "name": "@jspreddy/torq",
-  "version": "0.1.29-0",
+  "version": "0.1.30-0",
   "description": "SQL Like query builder for dynamodb.",
   "source": "src/index.ts",
   "module": "dist/module.js",
