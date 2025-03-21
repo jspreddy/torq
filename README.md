@@ -103,7 +103,7 @@ This is the resulting dynamo query.
 }
 ```
 
-> See the section on `"Reserved & Special Char Names"` in [unit tests](https://github.com/jspreddy/torq/blob/main/tests/unit-tests/query.test.js#L570) for more examples.
+> See the section on `"Reserved & Special Char Names"` in [unit tests](https://github.com/jspreddy/torq/blob/main/tests/unit-tests/index.test.js#L876) for more examples.
 
 
 
