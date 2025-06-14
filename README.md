@@ -24,6 +24,21 @@ SQL Like Query interface for better code readability.
 > - [Integration tests: Users Table](https://github.com/jspreddy/torq/blob/main/tests/integration-tests/01-users-table.test.js#L33)
 
 
+## Install
+
+NPM Package: [@jspreddy/torq](https://www.npmjs.com/package/@jspreddy/torq)
+
+```bash
+npm install @jspreddy/torq
+```
+
+
+## Available Imports
+```js
+import { Index, Table, Query, Operation, DdbType } from '@jspreddy/torq';
+```
+
+
 ## Examples
 
 ### Example 1: Basic query
