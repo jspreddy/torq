@@ -6,7 +6,6 @@ import { Query, DdbType, Operation, Index, Table } from '../../src';
  * @param {string[]} stringArray Array of strings.
  * @returns joined string.
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const stringer = (stringArray) => _.join(stringArray, " ");
 
 describe('class: Table', () => {

@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    ".github/",
+    ".idea/",
+    ".vscode/",
+    "dist/",
+    "reference_material/",
+    "jest.config.cjs",
+    "jest-dynamodb-config.cjs",
+    "node_modules/"
+  ],
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "typescript/unbound-method": "off",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error"
+  },
+  "overrides": [
+    {
+      "files": ["tests/**", "**/*.test.js"],
+      "plugins": ["eslint", "jest"],
+      "env": {
+        "node": true,
+        "jest": true
+      },
+      "rules": {
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off"
+      }
+    }
+  ]
+}
