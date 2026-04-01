@@ -1,6 +1,8 @@
-import _ from 'lodash';
-import { reserved } from './dynamo_reserved_words';
 import assert from 'assert';
+
+import _ from 'lodash';
+
+import { reserved } from './dynamo_reserved_words';
 import { Index, Table } from './Structure';
 
 /**
@@ -22,8 +24,8 @@ export enum DdbType {
 type DynamoValue = string | number | boolean;
 
 type BetweenValues = {
-    start: DynamoValue,
-    end: DynamoValue,
+    start: DynamoValue;
+    end: DynamoValue;
 };
 
 export enum Operation {
@@ -36,32 +38,38 @@ export enum Operation {
 }
 
 type SizeValue = {
-    val: DynamoValue,
-    op: Operation,
+    val: DynamoValue;
+    op: Operation;
 };
 
 type Condition = {
     key: string;
     val?: DynamoValue | BetweenValues | DdbType | SizeValue;
     type: string;
-    actualName?: string,
+    actualName?: string;
 };
 
 type ProjectionExpressionObj = { ProjectionExpression: string | undefined };
 type KeyConditionExpressionObj = { KeyConditionExpression: string | undefined };
 type FilterExpressionObj = { FilterExpression: string | undefined };
-type ExpressionAttributeValuesObj = { ExpressionAttributeValues: object | undefined };
-type ExpressionAttributeNamesObj = { ExpressionAttributeNames: object | undefined };
+type ExpressionAttributeValuesObj = {
+    ExpressionAttributeValues: object | undefined;
+};
+type ExpressionAttributeNamesObj = {
+    ExpressionAttributeNames: object | undefined;
+};
 
 type Replacements = {
     keys: Record<string, string>;
     vals: Record<string, DynamoValue>;
 };
 
-type RawFilter = {
-    condition: string;
-    replacements: Replacements;
-} | undefined;
+type RawFilter =
+    | {
+          condition: string;
+          replacements: Replacements;
+      }
+    | undefined;
 
 export class Query {
     static DEFAULT_LIMIT = 25;
@@ -167,9 +175,13 @@ export class Query {
                         _.isString(this._index?.hashKey) && _.size(this._index.hashKey) > 0,
                         'Query.where.hash: Provided Index does not have a hashKey',
                     );
-                    this._keys.push({ key: this._index.hashKey, val: val, type: 'hash-eq' });
+                    this._keys.push({
+                        key: this._index.hashKey,
+                        val: val,
+                        type: 'hash-eq',
+                    });
                     return this;
-                }
+                },
             },
             range: {
                 eq: (val: DynamoValue): Query => {
@@ -312,34 +324,39 @@ export class Query {
 
     toDynamo(): object {
         const [keyCond, keyAttribVals, keyAttribNames] = formatKeyCondition(this._keys);
-        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(this._filters, this._rawFilters);
+        const [filterCond, filterAttribVals, filterAttribNames] = formatFilterCondition(
+            this._filters,
+            this._rawFilters,
+        );
         const [projection, projectionAttribNames] = formatProjectionExpression(this._selections);
 
-        return _.omitBy({
-            TableName: this._tableName,
-            Select: this._count ? 'COUNT' : undefined,
-            ...projection,
-            ...keyCond,
-            ...filterCond,
-            ..._.merge(keyAttribNames, filterAttribNames, projectionAttribNames),
-            ..._.merge(keyAttribVals, filterAttribVals),
-            Limit: this._limit,
-            IndexName: this._index?.name,
-            ScanIndexForward: this._scanForward,
-            ExclusiveStartKey: this._startAfter,
-            ReturnConsumedCapacity: this._consumedCapacity,
-        }, _.isNil);
+        return _.omitBy(
+            {
+                TableName: this._tableName,
+                Select: this._count ? 'COUNT' : undefined,
+                ...projection,
+                ...keyCond,
+                ...filterCond,
+                ..._.merge(keyAttribNames, filterAttribNames, projectionAttribNames),
+                ..._.merge(keyAttribVals, filterAttribVals),
+                Limit: this._limit,
+                IndexName: this._index?.name,
+                ScanIndexForward: this._scanForward,
+                ExclusiveStartKey: this._startAfter,
+                ReturnConsumedCapacity: this._consumedCapacity,
+            },
+            _.isNil,
+        );
     }
 }
 
 const isReserved = (name: string): boolean => {
     // Does the upper cased "name" exists in the reserved words list.
     return _.indexOf(reserved, _.toUpper(name)) != -1;
-}
+};
 
 const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> => {
-    return _.map(conditions, (cond) => {
-
+    return _.map(conditions, cond => {
         if (isReserved(cond.key)) {
             return {
                 ...cond,
@@ -348,7 +365,7 @@ const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> =>
             };
         }
 
-        if (_.startsWith(cond.key, "_")) {
+        if (_.startsWith(cond.key, '_')) {
             return {
                 ...cond,
                 key: `#${cond.key}`,
@@ -360,45 +377,47 @@ const replaceReservedNames = (conditions: Array<Condition>): Array<Condition> =>
     });
 };
 
-const formatKeyCondition = (conditions: Array<Condition>): [KeyConditionExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
+const formatKeyCondition = (
+    conditions: Array<Condition>,
+): [KeyConditionExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
     const updatedConditions = replaceReservedNames(conditions);
 
     const conditionParts: string[] = [];
     const attribVals = {};
     const attribNames = {};
 
-    _.each(updatedConditions, (cond) => {
+    _.each(updatedConditions, cond => {
         const { key, val, type, actualName } = cond;
         const valRef = `:${_.trim(key, '#')}`;
 
         switch (type) {
-            case "hash-eq":
-            case "eq":
+            case 'hash-eq':
+            case 'eq':
                 conditionParts.push(`${key} = ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
-            case "gt":
+            case 'gt':
                 conditionParts.push(`${key} > ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
-            case "gtEq":
+            case 'gtEq':
                 conditionParts.push(`${key} >= ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
-            case "lt":
+            case 'lt':
                 conditionParts.push(`${key} < ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
-            case "ltEq":
+            case 'ltEq':
                 conditionParts.push(`${key} <= ${valRef}`);
                 _.set(attribVals, valRef, val);
                 break;
 
-            case "between": {
+            case 'between': {
                 const valRefStart = `${valRef}_start`;
                 const valRefEnd = `${valRef}_end`;
                 const between = val as BetweenValues;
@@ -408,7 +427,7 @@ const formatKeyCondition = (conditions: Array<Condition>): [KeyConditionExpressi
                 break;
             }
 
-            case "begins_with":
+            case 'begins_with':
                 conditionParts.push(`begins_with(${key}, ${valRef})`);
                 _.set(attribVals, valRef, val);
                 break;
@@ -420,13 +439,22 @@ const formatKeyCondition = (conditions: Array<Condition>): [KeyConditionExpressi
     });
 
     return [
-        { KeyConditionExpression: _.isEmpty(conditionParts) ? undefined : _.join(conditionParts, " and ") },
-        { ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals },
-        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
+        {
+            KeyConditionExpression: _.isEmpty(conditionParts) ? undefined : _.join(conditionParts, ' and '),
+        },
+        {
+            ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals,
+        },
+        {
+            ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames,
+        },
     ];
 };
 
-const formatFilterCondition = (filters: Array<Condition>, rawFilters: Array<RawFilter>): [FilterExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
+const formatFilterCondition = (
+    filters: Array<Condition>,
+    rawFilters: Array<RawFilter>,
+): [FilterExpressionObj, ExpressionAttributeValuesObj, ExpressionAttributeNamesObj] => {
     const updatedFilters = replaceReservedNames(filters);
 
     const filterParts: string[] = [];
@@ -529,34 +557,55 @@ const formatFilterCondition = (filters: Array<Condition>, rawFilters: Array<RawF
     let filterExp = _.join(filterParts, ' and ');
 
     if (rawFilters.length > 0) {
-        const rawFilterCondition = _.chain(rawFilters).map(f => f ? `(${f.condition})` : undefined).compact().join(' and ').value();
+        const rawFilterCondition = _.chain(rawFilters)
+            .map(f => (f ? `(${f.condition})` : undefined))
+            .compact()
+            .join(' and ')
+            .value();
         if (_.isEmpty(filterExp)) {
             filterExp = rawFilterCondition;
-        }
-        else {
+        } else {
             filterExp = _.join([filterExp, rawFilterCondition], ' and ');
         }
-        _.merge(attribVals, _.chain(rawFilters).map(f => f?.replacements.vals).compact().reduce(_.merge, {}).value());
-        _.merge(attribNames, _.chain(rawFilters).map(f => f?.replacements.keys).compact().reduce(_.merge, {}).value());
+        _.merge(
+            attribVals,
+            _.chain(rawFilters)
+                .map(f => f?.replacements.vals)
+                .compact()
+                .reduce(_.merge, {})
+                .value(),
+        );
+        _.merge(
+            attribNames,
+            _.chain(rawFilters)
+                .map(f => f?.replacements.keys)
+                .compact()
+                .reduce(_.merge, {})
+                .value(),
+        );
     }
 
     return [
         { FilterExpression: _.isEmpty(filterExp) ? undefined : filterExp },
-        { ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals },
-        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
+        {
+            ExpressionAttributeValues: _.isEmpty(attribVals) ? undefined : attribVals,
+        },
+        {
+            ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames,
+        },
     ];
 };
 
 const formatProjectionExpression = (proj: Array<string>): [ProjectionExpressionObj, ExpressionAttributeNamesObj] => {
     const attribNames = {};
 
-    const projection = _.map(proj, (col) => {
+    const projection = _.map(proj, col => {
         const attribRef = `#${_.trim(col)}`;
         if (isReserved(col)) {
             _.set(attribNames, attribRef, col);
             return attribRef;
         }
-        if (_.startsWith(col, "_")) {
+        if (_.startsWith(col, '_')) {
             _.set(attribNames, attribRef, col);
             return attribRef;
         }
@@ -564,8 +613,12 @@ const formatProjectionExpression = (proj: Array<string>): [ProjectionExpressionO
     });
 
     return [
-        { ProjectionExpression: _.isEmpty(projection) ? undefined : _.join(projection, ", ") },
-        { ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames },
+        {
+            ProjectionExpression: _.isEmpty(projection) ? undefined : _.join(projection, ', '),
+        },
+        {
+            ExpressionAttributeNames: _.isEmpty(attribNames) ? undefined : attribNames,
+        },
     ];
 };
 

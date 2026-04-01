@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "singleQuote": true,
+  "ignorePatterns": ["reference_material/**", "**/*.md"],
+  "arrowParens": "avoid",
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "sortImports": true,
+  "insertFinalNewline": true,
+  "semi": true,
+  "quoteProps": "as-needed"
+}

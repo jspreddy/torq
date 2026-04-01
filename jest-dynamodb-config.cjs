@@ -17,7 +17,10 @@ module.exports = {
                     Projection: {
                         ProjectionType: 'ALL',
                     },
-                    ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits: 10,
+                        WriteCapacityUnits: 10,
+                    },
                 },
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
@@ -33,6 +36,6 @@ module.exports = {
                 { AttributeName: 'sk', AttributeType: 'S' },
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
-        }
+        },
     ],
 };

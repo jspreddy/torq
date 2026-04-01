@@ -1,31 +1,64 @@
-import { ddbDoc } from './ddb-setup';
-
 // Local Imports
-import {
-    Table,
-    Query,
-    Index,
-} from '../../src';
+import { Table, Query, Index } from '../../src';
+import { ddbDoc } from './ddb-setup';
 
 describe('Integration Tests: Files Table', () => {
     beforeAll(async () => {
-        await ddbDoc.put({ TableName: 'files', Item: { id: '1', version: '2024-01-01', name: 'hello' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: '1', version: '2024-01-02', name: 'world' } });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: '1', version: '2024-01-01', name: 'hello' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: '1', version: '2024-01-02', name: 'world' },
+        });
 
-        await ddbDoc.put({ TableName: 'files', Item: { id: '2', version: '2024-01-01', name: 'asdf' } });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: '2', version: '2024-01-01', name: 'asdf' },
+        });
 
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-01', name: 'Sun' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-02', name: 'Vega Prime' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-03', name: 'Alpha Centauri' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-04', name: 'Betelgeuse', hearts: 20 } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-05', name: 'Polaris' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-01-06', name: 'Sirius' } });
-        await ddbDoc.put({ TableName: 'files', Item: { id: 'stars', version: '2024-02-01', name: 'Procyon' } });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-01-01', name: 'Sun' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-01-02', name: 'Vega Prime' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-01-03', name: 'Alpha Centauri' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: {
+                id: 'stars',
+                version: '2024-01-04',
+                name: 'Betelgeuse',
+                hearts: 20,
+            },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-01-05', name: 'Polaris' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-01-06', name: 'Sirius' },
+        });
+        await ddbDoc.put({
+            TableName: 'files',
+            Item: { id: 'stars', version: '2024-02-01', name: 'Procyon' },
+        });
     });
 
     describe('Connectivity Checks', () => {
         it('should get item by id 1', async () => {
-            const { Item } = await ddbDoc.get({ TableName: 'files', Key: { id: '1', version: '2024-01-01' } });
+            const { Item } = await ddbDoc.get({
+                TableName: 'files',
+                Key: { id: '1', version: '2024-01-01' },
+            });
             expect(Item).toEqual({
                 id: '1',
                 name: 'hello',
@@ -34,7 +67,10 @@ describe('Integration Tests: Files Table', () => {
         });
 
         it('should get item by id 2', async () => {
-            const { Item } = await ddbDoc.get({ TableName: 'files', Key: { id: '2', version: '2024-01-01' } });
+            const { Item } = await ddbDoc.get({
+                TableName: 'files',
+                Key: { id: '2', version: '2024-01-01' },
+            });
             expect(Item).toEqual({
                 id: '2',
                 name: 'asdf',
@@ -44,9 +80,7 @@ describe('Integration Tests: Files Table', () => {
     });
 
     describe('class: Query', () => {
-
         describe('With only HASH key on table definition', () => {
-
             it('should Query for item 1', async () => {
                 const table = new Table('files', 'id');
                 const x = new Query(table);
@@ -94,7 +128,6 @@ describe('Integration Tests: Files Table', () => {
         });
 
         describe('With HASH and RANGE keys on table definition', () => {
-
             it('should Query for item 2, with hash key only', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
@@ -118,8 +151,7 @@ describe('Integration Tests: Files Table', () => {
             it('should Query for item 1 with hash and range keys', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('1')
-                    .where.range.eq('2024-01-02');
+                x.where.hash.eq('1').where.range.eq('2024-01-02');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -135,16 +167,13 @@ describe('Integration Tests: Files Table', () => {
                     ],
                 });
             });
-
         });
 
         describe('RANGE key operations', () => {
-
             it('should Query for stars, where version is between 2024-01-02 and 2024-01-04', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.between('2024-01-02', '2024-01-04');
+                x.where.hash.eq('stars').where.range.between('2024-01-02', '2024-01-04');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -174,8 +203,7 @@ describe('Integration Tests: Files Table', () => {
             it('should query for stars, where version is greater than 2024-01-04', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.gt('2024-01-04');
+                x.where.hash.eq('stars').where.range.gt('2024-01-04');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -205,8 +233,7 @@ describe('Integration Tests: Files Table', () => {
             it('should query for stars, where version is greater than or equal to 2024-01-04', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.gtEq('2024-01-04');
+                x.where.hash.eq('stars').where.range.gtEq('2024-01-04');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -241,8 +268,7 @@ describe('Integration Tests: Files Table', () => {
             it('should query for stars, where version is less than 2024-01-04', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.lt('2024-01-04');
+                x.where.hash.eq('stars').where.range.lt('2024-01-04');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -272,8 +298,7 @@ describe('Integration Tests: Files Table', () => {
             it('should query for stars, where version is less than or equal to 2024-01-02', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.ltEq('2024-01-02');
+                x.where.hash.eq('stars').where.range.ltEq('2024-01-02');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -298,8 +323,7 @@ describe('Integration Tests: Files Table', () => {
             it('should query for stars, where version begins with 2024-01', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .where.range.beginsWith('2024-01');
+                x.where.hash.eq('stars').where.range.beginsWith('2024-01');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -343,12 +367,10 @@ describe('Integration Tests: Files Table', () => {
         });
 
         describe('FILTER operations', () => {
-
             it('should filter for stars, where name = "Sun"', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.eq('name', 'Sun');
+                x.where.hash.eq('stars').filter.eq('name', 'Sun');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -368,8 +390,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name begins with "S"', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.beginsWith('name', 'S');
+                x.where.hash.eq('stars').filter.beginsWith('name', 'S');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -394,8 +415,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name contains "o"', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.contains('name', 'o');
+                x.where.hash.eq('stars').filter.contains('name', 'o');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -420,8 +440,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name not equal to "Sun"', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.notEq('name', 'Sun');
+                x.where.hash.eq('stars').filter.notEq('name', 'Sun');
 
                 const response = await ddbDoc.query(x.toDynamo());
 
@@ -466,9 +485,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name is >= A and < C', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.gtEq('name', 'A')
-                    .filter.lt('name', 'C');
+                x.where.hash.eq('stars').filter.gtEq('name', 'A').filter.lt('name', 'C');
 
                 const query = x.toDynamo();
                 const response = await ddbDoc.query(query);
@@ -494,8 +511,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name is between A and C', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.between('name', 'A', 'C');
+                x.where.hash.eq('stars').filter.between('name', 'A', 'C');
 
                 const query = x.toDynamo();
                 const response = await ddbDoc.query(query);
@@ -521,9 +537,7 @@ describe('Integration Tests: Files Table', () => {
             it('should filter for stars, where name is between A and C and version > 2024-01-03', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.where.hash.eq('stars')
-                    .filter.between('name', 'A', 'C')
-                    .filter.gt('hearts', 10);
+                x.where.hash.eq('stars').filter.between('name', 'A', 'C').filter.gt('hearts', 10);
 
                 const query = x.toDynamo();
                 const response = await ddbDoc.query(query);
@@ -547,9 +561,7 @@ describe('Integration Tests: Files Table', () => {
             it('should return consumed capacity TOTAL', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.select()
-                    .where.hash.eq('stars')
-                    .withConsumedCapacity('TOTAL');
+                x.select().where.hash.eq('stars').withConsumedCapacity('TOTAL');
 
                 const response = await ddbDoc.query(x.toDynamo());
                 expect(response).toEqual({
@@ -567,9 +579,7 @@ describe('Integration Tests: Files Table', () => {
             it('should return consumed capacity INDEXES, when querying a table', async () => {
                 const table = new Table('files', 'id', 'version');
                 const x = new Query(table);
-                x.select()
-                    .where.hash.eq('stars')
-                    .withConsumedCapacity('INDEXES');
+                x.select().where.hash.eq('stars').withConsumedCapacity('INDEXES');
 
                 const response = await ddbDoc.query(x.toDynamo());
                 expect(response).toEqual({
@@ -592,10 +602,7 @@ describe('Integration Tests: Files Table', () => {
                 const versionIndex = new Index('version-index', 'version');
                 const x = new Query(table);
 
-                x.select()
-                    .using(versionIndex)
-                    .where.hash.eq('2024-01')
-                    .withConsumedCapacity('INDEXES');
+                x.select().using(versionIndex).where.hash.eq('2024-01').withConsumedCapacity('INDEXES');
 
                 const response = await ddbDoc.query(x.toDynamo());
                 expect(response).toEqual({

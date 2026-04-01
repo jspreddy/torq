@@ -1,12 +1,8 @@
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
+// DynamoDBClient,
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import _ from 'lodash';
-import {
-    DynamoDB,
-    // DynamoDBClient,
-} from '@aws-sdk/client-dynamodb';
-import {
-    DynamoDBDocument,
-    // DynamoDBDocumentClient,
-} from '@aws-sdk/lib-dynamodb';
+// DynamoDBDocumentClient,
 
 const isTest = process.env.JEST_WORKER_ID;
 
@@ -19,20 +15,15 @@ const config = {
     },
 };
 
-
 export const ddb = new DynamoDB({
     ...(isTest && config),
 });
 
-export const ddbDoc = DynamoDBDocument.from(
-    ddb,
-    {
-        marshallOptions: {
-            convertEmptyValues: true,
-        },
-    }
-);
-
+export const ddbDoc = DynamoDBDocument.from(ddb, {
+    marshallOptions: {
+        convertEmptyValues: true,
+    },
+});
 
 // These Barebones clients require that we handle marshalling and unmarshalling.
 // So, I am not using them.
@@ -45,7 +36,7 @@ export const ddbDoc = DynamoDBDocument.from(
 // export const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
 export const ddbRecursive = {
-    scanAll: async (query) => {
+    scanAll: async query => {
         let response = {};
         let result = {
             $metadata: [],
@@ -58,18 +49,9 @@ export const ddbRecursive = {
             query.ExclusiveStartKey = response.LastEvaluatedKey;
             response = await ddbDoc.scan(query);
             result = {
-                $metadata: [
-                    ...result.$metadata,
-                    response.$metadata,
-                ],
-                $LastEvaluatedKeys: [
-                    ...result.$LastEvaluatedKeys,
-                    response.LastEvaluatedKey,
-                ],
-                Items: [
-                    ...result.Items,
-                    ...(response.Items || []),
-                ],
+                $metadata: [...result.$metadata, response.$metadata],
+                $LastEvaluatedKeys: [...result.$LastEvaluatedKeys, response.LastEvaluatedKey],
+                Items: [...result.Items, ...(response.Items || [])],
                 Count: result.Count + (response.Count || 0),
                 ScannedCount: result.ScannedCount + (response.ScannedCount || 0),
                 LastEvaluatedKey: response.LastEvaluatedKey,

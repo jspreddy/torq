@@ -1,18 +1,15 @@
-import _ from 'lodash';
-import { ddbDoc, ddbRecursive } from './ddb-setup';
-import userData from './data/users-data';
 import * as Promise from 'bluebird';
+import _ from 'lodash';
 
-import {
-    Table,
-    Query,
-} from '../../src';
+import { Table, Query } from '../../src';
+import userData from './data/users-data';
+import { ddbDoc, ddbRecursive } from './ddb-setup';
 
 const usersTable = new Table('users', 'pk', 'sk');
 
 async function addUserRecord(user) {
     return ddbDoc.put({ TableName: 'users', Item: user });
-};
+}
 
 const queryMetadata = {
     $metadata: {
@@ -28,12 +25,11 @@ const queryMetadata = {
 describe('Users Table Integration Tests', () => {
     beforeAll(async () => {
         // setup data for the users table from ./data/users-data.js
-        await Promise.map(userData, (user) => addUserRecord(user));
+        await Promise.map(userData, user => addUserRecord(user));
     });
 
     describe('Query', () => {
-
-        describe("ramana@example.com", () => {
+        describe('ramana@example.com', () => {
             it('should fetch one user by pk and sk', async () => {
                 const x = new Query(usersTable);
 
@@ -49,16 +45,15 @@ describe('Users Table Integration Tests', () => {
                         sk: 'user',
                         firstName: 'ramana',
                         lastName: 'reddy',
-                        age: 30
-                    }
+                        age: 30,
+                    },
                 ]);
             });
 
             it('should fetch all types for one email', async () => {
                 const x = new Query(usersTable);
 
-                x.select()
-                    .where.hash.eq('ramana@example.com');
+                x.select().where.hash.eq('ramana@example.com');
 
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(3);
@@ -67,14 +62,14 @@ describe('Users Table Integration Tests', () => {
                         sk: 'role:basic',
                         name: 'basic',
                         pk: 'ramana@example.com',
-                        privilege: 'read-basic-app'
+                        privilege: 'read-basic-app',
                     },
                     {
                         sk: 'role:reports',
                         name: 'reports',
                         pk: 'ramana@example.com',
                         privilege: 'reports',
-                        deleted_at: '2024-01-01T00:00:00.000Z'
+                        deleted_at: '2024-01-01T00:00:00.000Z',
                     },
                     {
                         firstName: 'ramana',
@@ -86,17 +81,15 @@ describe('Users Table Integration Tests', () => {
                         sk: 'user',
                         pk: 'ramana@example.com',
                         favColor: 'blue',
-                        age: 30
-                    }
+                        age: 30,
+                    },
                 ]);
             });
 
             it('should fetch records by filter for one email', async () => {
                 const x = new Query(usersTable);
 
-                x.select()
-                    .where.hash.eq('ramana@example.com')
-                    .filter.gt('age', 10);
+                x.select().where.hash.eq('ramana@example.com').filter.gt('age', 10);
 
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(1);
@@ -112,16 +105,14 @@ describe('Users Table Integration Tests', () => {
                         lastName: 'reddy',
                         phone: '123-456-7890',
                         address: '123 Main St',
-                    }
+                    },
                 ]);
             });
 
             it('should fetch role records for one email', async () => {
                 const x = new Query(usersTable);
 
-                x.select()
-                    .where.hash.eq('ramana@example.com')
-                    .where.range.beginsWith('role:');
+                x.select().where.hash.eq('ramana@example.com').where.range.beginsWith('role:');
 
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(2);
@@ -130,15 +121,15 @@ describe('Users Table Integration Tests', () => {
                         sk: 'role:basic',
                         name: 'basic',
                         pk: 'ramana@example.com',
-                        privilege: 'read-basic-app'
+                        privilege: 'read-basic-app',
                     },
                     {
                         sk: 'role:reports',
                         name: 'reports',
                         pk: 'ramana@example.com',
                         privilege: 'reports',
-                        deleted_at: '2024-01-01T00:00:00.000Z'
-                    }
+                        deleted_at: '2024-01-01T00:00:00.000Z',
+                    },
                 ]);
             });
 
@@ -157,13 +148,13 @@ describe('Users Table Integration Tests', () => {
                         sk: 'role:basic',
                         name: 'basic',
                         pk: 'ramana@example.com',
-                        privilege: 'read-basic-app'
-                    }
+                        privilege: 'read-basic-app',
+                    },
                 ]);
             });
         });
 
-        describe("suresh@example.com", () => {
+        describe('suresh@example.com', () => {
             it('should fetch one user by pk and sk', async () => {
                 const x = new Query(usersTable);
 
@@ -187,9 +178,7 @@ describe('Users Table Integration Tests', () => {
             it('should fetch all roles for this user', async () => {
                 const x = new Query(usersTable);
 
-                x.select()
-                    .where.hash.eq('suresh@example.com')
-                    .where.range.beginsWith('role:');
+                x.select().where.hash.eq('suresh@example.com').where.range.beginsWith('role:');
 
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(12);
@@ -218,102 +207,80 @@ describe('Users Table Integration Tests', () => {
 
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Count).toBe(8);
-                expect(result).toEqual(
-                    {
-                        ...queryMetadata,
-                        Count: 8,
-                        ScannedCount: 12,
-                    }
-                );
+                expect(result).toEqual({
+                    ...queryMetadata,
+                    Count: 8,
+                    ScannedCount: 12,
+                });
             });
         });
 
         describe('mahesh@example.com', () => {
-            describe("COUNT", () => {
+            describe('COUNT', () => {
                 it('should count all records for this user', async () => {
                     const x = new Query(usersTable);
                     x.count().where.hash.eq('mahesh@example.com');
                     const result = await ddbDoc.query(x.toDynamo());
                     expect(result.Count).toBe(16);
-                    expect(result).toEqual(
-                        {
-                            ...queryMetadata,
-                            Count: 16,
-                            ScannedCount: 16,
-                        }
-                    );
+                    expect(result).toEqual({
+                        ...queryMetadata,
+                        Count: 16,
+                        ScannedCount: 16,
+                    });
                 });
 
                 it('should count user objects for this user', async () => {
                     const x = new Query(usersTable);
-                    x.count()
-                        .where.hash.eq('mahesh@example.com')
-                        .where.range.eq('user');
+                    x.count().where.hash.eq('mahesh@example.com').where.range.eq('user');
                     const result = await ddbDoc.query(x.toDynamo());
                     expect(result.Count).toBe(1);
-                    expect(result).toEqual(
-                        {
-                            ...queryMetadata,
-                            Count: 1,
-                            ScannedCount: 1,
-                        }
-                    );
+                    expect(result).toEqual({
+                        ...queryMetadata,
+                        Count: 1,
+                        ScannedCount: 1,
+                    });
                 });
 
                 it('should count addresses for this user', async () => {
                     const x = new Query(usersTable);
-                    x.count()
-                        .where.hash.eq('mahesh@example.com')
-                        .where.range.beginsWith('address:');
+                    x.count().where.hash.eq('mahesh@example.com').where.range.beginsWith('address:');
                     const result = await ddbDoc.query(x.toDynamo());
                     expect(result.Count).toBe(6);
-                    expect(result).toEqual(
-                        {
-                            ...queryMetadata,
-                            Count: 6,
-                            ScannedCount: 6,
-                        }
-                    );
+                    expect(result).toEqual({
+                        ...queryMetadata,
+                        Count: 6,
+                        ScannedCount: 6,
+                    });
                 });
 
                 it('should count orders for this user', async () => {
                     const x = new Query(usersTable);
-                    x.count()
-                        .where.hash.eq('mahesh@example.com')
-                        .where.range.beginsWith('order:');
+                    x.count().where.hash.eq('mahesh@example.com').where.range.beginsWith('order:');
                     const result = await ddbDoc.query(x.toDynamo());
                     expect(result.Count).toBe(5);
-                    expect(result).toEqual(
-                        {
-                            ...queryMetadata,
-                            Count: 5,
-                            ScannedCount: 5,
-                        }
-                    );
+                    expect(result).toEqual({
+                        ...queryMetadata,
+                        Count: 5,
+                        ScannedCount: 5,
+                    });
                 });
 
                 it('should count wishlist for this user', async () => {
                     const x = new Query(usersTable);
-                    x.count()
-                        .where.hash.eq('mahesh@example.com')
-                        .where.range.beginsWith('wishlist:');
+                    x.count().where.hash.eq('mahesh@example.com').where.range.beginsWith('wishlist:');
                     const result = await ddbDoc.query(x.toDynamo());
                     expect(result.Count).toBe(2);
-                    expect(result).toEqual(
-                        {
-                            ...queryMetadata,
-                            Count: 2,
-                            ScannedCount: 2,
-                        }
-                    );
+                    expect(result).toEqual({
+                        ...queryMetadata,
+                        Count: 2,
+                        ScannedCount: 2,
+                    });
                 });
             });
 
             it('should fetch all wishlist items for this user', async () => {
                 const x = new Query(usersTable);
-                x.select()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.beginsWith('wishlist:');
+                x.select().where.hash.eq('mahesh@example.com').where.range.beginsWith('wishlist:');
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(2);
                 expect(result.Items).toMatchSnapshot();
@@ -321,9 +288,7 @@ describe('Users Table Integration Tests', () => {
 
             it('should fetch addresses between 2 and 5', async () => {
                 const x = new Query(usersTable);
-                x.select()
-                    .where.hash.eq('mahesh@example.com')
-                    .where.range.between('address:2', 'address:5');
+                x.select().where.hash.eq('mahesh@example.com').where.range.between('address:2', 'address:5');
                 const result = await ddbDoc.query(x.toDynamo());
                 expect(result.Items.length).toBe(4);
                 expect(result.Items).toMatchSnapshot();
@@ -406,13 +371,13 @@ describe('Users Table Integration Tests', () => {
                 expect(result.Items.length).toBe(25);
                 expect(result.ScannedCount).toBe(25);
                 expect(result.LastEvaluatedKey).toEqual({
-                    "pk": "ramesh@example.com",
-                    "sk": "role:research-write",
+                    pk: 'ramesh@example.com',
+                    sk: 'role:research-write',
                 });
                 expect(_.omit(result, '$metadata')).toMatchSnapshot();
             });
 
-            it("should fetch second page of records, using the last evaluated key from the first page", async () => {
+            it('should fetch second page of records, using the last evaluated key from the first page', async () => {
                 // total: 33, page1: 25, page2: 8
                 const x = new Query(usersTable);
                 x.select().where.hash.eq('ramesh@example.com');
@@ -420,21 +385,21 @@ describe('Users Table Integration Tests', () => {
                 expect(result.Items.length).toBe(25);
                 expect(result.ScannedCount).toBe(25);
                 expect(result.LastEvaluatedKey).toEqual({
-                    "pk": "ramesh@example.com",
-                    "sk": "role:research-write",
+                    pk: 'ramesh@example.com',
+                    sk: 'role:research-write',
                 });
                 x.startAfter(result.LastEvaluatedKey);
                 const result2 = await ddbDoc.query(x.toDynamo());
                 expect(x.toDynamo()).toEqual({
-                    TableName: "users",
-                    KeyConditionExpression: "pk = :pk",
+                    TableName: 'users',
+                    KeyConditionExpression: 'pk = :pk',
                     ExpressionAttributeValues: {
-                        ":pk": "ramesh@example.com",
+                        ':pk': 'ramesh@example.com',
                     },
                     Limit: 25,
                     ExclusiveStartKey: {
-                        pk: "ramesh@example.com",
-                        sk: "role:research-write",
+                        pk: 'ramesh@example.com',
+                        sk: 'role:research-write',
                     },
                 });
                 expect(result2.Items.length).toBe(8);
@@ -442,7 +407,7 @@ describe('Users Table Integration Tests', () => {
                 expect(_.omit(result2, '$metadata')).toMatchSnapshot();
             });
 
-            it("should fetch fetch 3 records at a time", async () => {
+            it('should fetch fetch 3 records at a time', async () => {
                 // total: 33, page1: 25, page2: 8
                 const x = new Query(usersTable);
                 x.select().where.hash.eq('ramesh@example.com').limit(3);
@@ -457,8 +422,7 @@ describe('Users Table Integration Tests', () => {
                     counter += result.Items.length;
                     scannedCount += result.ScannedCount;
                     records.push(...result.Items);
-                } while (result.LastEvaluatedKey)
-
+                } while (result.LastEvaluatedKey);
 
                 expect(counter).toBe(33);
                 expect(scannedCount).toBe(33);
@@ -495,9 +459,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return records for reserved column names and filter on same column', async () => {
             const x = new Query(usersTable);
-            x.scan(['pk', 'sk', 'name', 'privilege'])
-                .filter.beginsWith('name', 'b')
-                .limit(200);
+            x.scan(['pk', 'sk', 'name', 'privilege']).filter.beginsWith('name', 'b').limit(200);
             const result = await ddbDoc.scan(x.toDynamo());
             expect(result.Items.length).toBe(4);
             expect(result.Items).toMatchSnapshot();
@@ -505,10 +467,7 @@ describe('Users Table Integration Tests', () => {
 
         it('with multiple filters, should return 1 record', async () => {
             const x = new Query(usersTable);
-            x.scan()
-                .filter.eq('sk', 'user')
-                .filter.beginsWith('firstName', 's')
-                .filter.contains('firstName', 'h');
+            x.scan().filter.eq('sk', 'user').filter.beginsWith('firstName', 's').filter.contains('firstName', 'h');
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Items.length).toBe(1);
@@ -517,8 +476,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return all user records', async () => {
             const x = new Query(usersTable);
-            x.scan()
-                .filter.eq('sk', 'user');
+            x.scan().filter.eq('sk', 'user');
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Items.length).toBe(24);
@@ -527,10 +485,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return all user records of age between 30 and 40', async () => {
             const x = new Query(usersTable);
-            x.scan(['pk', 'sk', 'age'])
-                .filter.eq('sk', 'user')
-                .filter.gt('age', 30)
-                .filter.lt('age', 40);
+            x.scan(['pk', 'sk', 'age']).filter.eq('sk', 'user').filter.gt('age', 30).filter.lt('age', 40);
 
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
@@ -572,9 +527,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of records for filter on reserved column name', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.beginsWith('name', 'b')
-                .limit(200);
+            x.count().filter.beginsWith('name', 'b').limit(200);
             const result = await ddbRecursive.scanAll(x.toDynamo());
             expect(result.Count).toBe(4);
             expect(result.Items.length).toBe(0);
@@ -583,10 +536,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of records using multiple filters', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.eq('sk', 'user')
-                .filter.beginsWith('firstName', 'r')
-                .filter.contains('firstName', 'a');
+            x.count().filter.eq('sk', 'user').filter.beginsWith('firstName', 'r').filter.contains('firstName', 'a');
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Count).toBe(4);
@@ -596,17 +546,16 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of records using raw filter', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.raw('sk = :sk and begins_with(#fn, :fn1) and contains(#fn, :fn2)', {
-                    keys: {
-                        '#fn': 'firstName',
-                    },
-                    vals: {
-                        ':sk': 'user',
-                        ':fn1': 'r',
-                        ':fn2': 'a'
-                    }
-                });
+            x.count().filter.raw('sk = :sk and begins_with(#fn, :fn1) and contains(#fn, :fn2)', {
+                keys: {
+                    '#fn': 'firstName',
+                },
+                vals: {
+                    ':sk': 'user',
+                    ':fn1': 'r',
+                    ':fn2': 'a',
+                },
+            });
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Count).toBe(4);
@@ -616,8 +565,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of users', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.eq('sk', 'user');
+            x.count().filter.eq('sk', 'user');
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
             expect(result.Count).toBe(24);
@@ -627,10 +575,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of users of age between 30 and 40', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.eq('sk', 'user')
-                .filter.gt('age', 30)
-                .filter.lt('age', 40);
+            x.count().filter.eq('sk', 'user').filter.gt('age', 30).filter.lt('age', 40);
 
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);
@@ -641,10 +586,7 @@ describe('Users Table Integration Tests', () => {
 
         it('should return count of users with firstName containing "a" and "i"', async () => {
             const x = new Query(usersTable);
-            x.count()
-                .filter.eq('sk', 'user')
-                .filter.contains('firstName', 'a')
-                .filter.contains('firstName', 'i');
+            x.count().filter.eq('sk', 'user').filter.contains('firstName', 'a').filter.contains('firstName', 'i');
 
             const query = x.toDynamo();
             const result = await ddbRecursive.scanAll(query);

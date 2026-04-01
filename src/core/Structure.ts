@@ -1,5 +1,6 @@
-import _ from 'lodash';
 import assert from 'assert';
+
+import _ from 'lodash';
 
 export class Table {
     private _name: string;
@@ -9,7 +10,10 @@ export class Table {
     constructor(name: string, hashKey: string, rangeKey: string | undefined = undefined) {
         assert(_.isString(name) && _.size(name) > 0, 'Table.constructor(): name must be provided');
         assert(_.isString(hashKey) && _.size(hashKey) > 0, 'Table.constructor(): hashKey must be provided');
-        assert(_.isNil(rangeKey) || (_.isString(rangeKey) && _.size(rangeKey) > 0), 'Table.constructor(): rangeKey is invalid');
+        assert(
+            _.isNil(rangeKey) || (_.isString(rangeKey) && _.size(rangeKey) > 0),
+            'Table.constructor(): rangeKey is invalid',
+        );
 
         this._name = name;
         this._hashKey = hashKey;

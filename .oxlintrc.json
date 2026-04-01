@@ -1,15 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": [
-    ".github/",
-    ".idea/",
-    ".vscode/",
-    "dist/",
-    "reference_material/",
-    "jest.config.cjs",
-    "jest-dynamodb-config.cjs",
-    "node_modules/"
-  ],
+  "ignorePatterns": [".github/", ".idea/", ".vscode/", "dist/", "reference_material/", "node_modules/"],
   "options": {
     "typeAware": true
   },

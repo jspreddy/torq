@@ -2,18 +2,15 @@
   "name": "@jspreddy/torq",
   "version": "0.1.32",
   "description": "SQL Like query builder for dynamodb.",
-  "author": "Sai Phaninder Reddy Jonnala",
   "license": "MIT",
-  "type": "module",
-  "module": "dist/module.js",
-  "types": "dist/module.d.ts",
+  "author": "Sai Phaninder Reddy Jonnala",
   "repository": {
     "type": "git",
     "url": "https://github.com/jspreddy/torq"
   },
-  "engines": {
-    "node": ">=22.0.0"
-  },
+  "type": "module",
+  "module": "dist/module.js",
+  "types": "dist/module.d.ts",
   "scripts": {
     "ddb-local:cleanup": "npx kill-port 8000",
     "test": "jest /tests/",
@@ -27,12 +24,14 @@
     "test:unit:cover": "jest --coverage /tests/unit-tests/",
     "test:int:cover": "jest --coverage /tests/integration-tests/",
     "open:cover": "open coverage/lcov-report/index.html",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint --type-aware .",
+    "lint:fix": "oxlint --type-aware --fix .",
     "watch": "tsdown --watch",
     "build": "tsdown",
     "clean": "rm -rf ./dist",
-    "check": "npm run lint; npm run test:all; npm run build;"
+    "check": "npm run format:check && npm run lint && npm run test:all && npm run build"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.678.0",
@@ -48,6 +47,7 @@
     "bluebird": "^3.7.2",
     "jest": "^29.7.0",
     "kill-port": "^2.0.1",
+    "oxfmt": "^0.43.0",
     "oxlint": "^1.58.0",
     "oxlint-tsgolint": "^0.19.0",
     "tsdown": "^0.21.0",
@@ -55,5 +55,8 @@
   },
   "peerDependencies": {
     "lodash": "^4.17.21"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }
