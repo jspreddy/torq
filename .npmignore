@@ -1,6 +1,7 @@
 reference_material
 tests
 
+.parcel-cache
 .vscode
 .editorconfig
 babel.config.json
