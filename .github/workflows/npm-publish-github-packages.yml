@@ -9,7 +9,21 @@ on:
       - 'main'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 22.18]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci --ignore-engines
+      - run: npm run test:all
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +31,9 @@ jobs:
         with:
           node-version: 22.18
       - run: npm ci
-      - run: npm run test:all
+      - run: npm run lint
+      - run: npm run build
+      - run: node --input-type=module -e "import { Table, Query } from './dist/module.js'; const t = new Table('t', 'pk'); const q = new Query(t); q.where.hash.eq('x'); if (!q.toDynamo().TableName) process.exit(1);"
 
   publish-gpr:
     needs: build

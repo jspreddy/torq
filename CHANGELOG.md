@@ -4,11 +4,13 @@
 
 ### Breaking Changes
 
-- **Node.js 22.18+ required.** The minimum supported Node version is now `>=22.18.0` (previously `>=16`). This aligns with the tsdown build toolchain and its supported Node versions.
+- **Node.js 18+ required at runtime.** The minimum supported Node version is now `>=18.0.0` (previously `>=16`).
+- Package is now ESM-only (`"type": "module"`).
 
 ### Changed
 
 - Replaced Parcel with [tsdown](https://github.com/rolldown/tsdown) for bundling.
+- Development and CI use Node.js 22.18+ (required by the tsdown build toolchain). The published bundle targets Node.js 18 via `target: 'node18'`.
 - Package is now published as native ESM (`"type": "module"`).
 - Added an `exports` field in `package.json` for modern module resolution.
 - Type declarations moved from `dist/types.d.ts` to `dist/module.d.ts`.

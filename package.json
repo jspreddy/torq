@@ -18,7 +18,7 @@
     "url": "https://github.com/jspreddy/torq"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "ddb-local:cleanup": "npx kill-port 8000",
