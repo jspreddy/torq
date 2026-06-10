@@ -7,4 +7,8 @@ export default defineConfig({
   platform: 'node',
   fixedExtension: false,
   hash: false,
+  sourcemap: true,
+  dts: {
+    sourcemap: true,
+  },
 });
