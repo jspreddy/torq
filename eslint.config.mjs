@@ -18,6 +18,8 @@ const config = tseslint.config(
             ".vscode/",
             "dist/",
             "reference_material/",
+            "jest.config.cjs",
+            "jest-dynamodb-config.cjs",
         ],
     },
     {

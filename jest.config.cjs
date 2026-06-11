@@ -3,6 +3,11 @@
  * https://jestjs.io/docs/configuration
  */
 
+const path = require('path');
+
+// @shelf/jest-dynamodb loads this via require(); .cjs is required when package.json has "type": "module".
+process.env.JEST_DYNAMODB_CONFIG = path.resolve(__dirname, 'jest-dynamodb-config.cjs');
+
 /** @type {import('jest').Config} */
 const config = {
   // All imported modules in your tests should be mocked automatically
@@ -34,7 +39,7 @@ const config = {
   // Indicates which provider should be used to instrument code for coverage
   // coverageProvider: "babel",
 
-  // A list of reporter names that Jest uses when writing coverage reports
+  // A list of reporter names that Jest uses when writing coverage files
   // coverageReporters: [
   //   "json",
   //   "text",
@@ -100,7 +105,7 @@ const config = {
   // An enum that specifies notification mode. Requires { notify: true }
   // notifyMode: "failure-change",
 
-  // A preset that is used as a base for Jest's configuration
+  // A preset that is used as a base for the configuration
   preset: '@shelf/jest-dynamodb',
 
   // Run tests from one or more projects
@@ -185,7 +190,7 @@ const config = {
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
 
-  // Indicates whether each individual test should be reported during the run
+  // Indicates whether each individual test should be reported during the test run
   verbose: true,
 
   // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode

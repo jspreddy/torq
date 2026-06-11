@@ -4,7 +4,6 @@ tests
 .parcel-cache
 .vscode
 .editorconfig
-.parcelrc
 babel.config.json
 .nvmrc
 .idea
@@ -13,5 +12,5 @@ eslint.config.mjs
 *.gz
 .github
 coverage
-jest.config.js
-jest-dynamodb-config.js
+jest.config.cjs
+jest-dynamodb-config.cjs
