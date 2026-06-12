@@ -5,12 +5,19 @@
   "author": "Sai Phaninder Reddy Jonnala",
   "license": "MIT",
   "type": "module",
+  "main": "dist/module.cjs",
   "module": "dist/module.js",
   "types": "dist/module.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/module.d.ts",
-      "import": "./dist/module.js"
+      "import": {
+        "types": "./dist/module.d.ts",
+        "default": "./dist/module.js"
+      },
+      "require": {
+        "types": "./dist/module.d.cts",
+        "default": "./dist/module.cjs"
+      }
     }
   },
   "repository": {
