@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+### Added
+
+- CommonJS build output (`dist/module.cjs`) alongside the existing ESM bundle.
+- `main` and `exports.require` entries in `package.json` for `require()` consumers.
+- CJS type declarations at `dist/module.d.cts`.
+
 ## 0.2.0
 
 ### Breaking Changes
