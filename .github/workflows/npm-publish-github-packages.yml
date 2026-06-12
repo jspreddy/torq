@@ -34,6 +34,7 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: node --input-type=module -e "import { Table, Query } from './dist/module.js'; const t = new Table('t', 'pk'); const q = new Query(t); q.where.hash.eq('x'); if (!q.toDynamo().TableName) process.exit(1);"
+      - run: node -e "const { Table, Query } = require('./dist/module.cjs'); const t = new Table('t', 'pk'); const q = new Query(t); q.where.hash.eq('x'); if (!q.toDynamo().TableName) process.exit(1);"
 
   publish-gpr:
     needs: build

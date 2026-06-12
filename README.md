@@ -34,8 +34,17 @@ npm install @jspreddy/torq
 
 
 ## Available Imports
+
+ESM:
+
 ```js
 import { Index, Table, Query, Operation, DdbType } from '@jspreddy/torq';
+```
+
+CommonJS:
+
+```js
+const { Index, Table, Query, Operation, DdbType } = require('@jspreddy/torq');
 ```
 
 

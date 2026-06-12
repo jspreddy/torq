@@ -1,16 +1,23 @@
 {
   "name": "@jspreddy/torq",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "SQL Like query builder for dynamodb.",
   "author": "Sai Phaninder Reddy Jonnala",
   "license": "MIT",
   "type": "module",
+  "main": "dist/module.cjs",
   "module": "dist/module.js",
   "types": "dist/module.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/module.d.ts",
-      "import": "./dist/module.js"
+      "import": {
+        "types": "./dist/module.d.ts",
+        "default": "./dist/module.js"
+      },
+      "require": {
+        "types": "./dist/module.d.cts",
+        "default": "./dist/module.cjs"
+      }
     }
   },
   "repository": {

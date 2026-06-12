@@ -2,7 +2,7 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   entry: { module: 'src/index.ts' },
-  format: 'esm',
+  format: ['esm', 'cjs'],
   target: 'node18',
   outDir: 'dist',
   platform: 'node',
